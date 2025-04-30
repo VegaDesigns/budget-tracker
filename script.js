@@ -20,11 +20,22 @@ function updateTotals() {
 }
 
 function addTransactionToDOM(transaction) {
+  if (!transaction || typeof transaction.amount !== 'number') {
+    console.error("Invalid transaction object:", transaction);
+    return;
+  }
+
   const sign = transaction.amount < 0 ? '-' : '+';
   const item = document.createElement('li');
+
   item.classList.add(transaction.amount < 0 ? 'expense' : 'income');
-  item.innerHTML = \`\${transaction.description} <span>\${sign}$\${Math.abs(transaction.amount).toFixed(2)}</span>\`;
+  item.innerHTML = `
+    ${transaction.description}
+    <span>${sign}$${Math.abs(transaction.amount).toFixed(2)}</span>
+  `;
+
   transactionList.appendChild(item);
+  console.log("Transaction added:", transaction);  // DEBUG
 }
 
 function updateUI() {
