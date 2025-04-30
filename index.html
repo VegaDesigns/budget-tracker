@@ -4,25 +4,49 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Budget Tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 </head>
 <body>
   <div class="container">
     <h1>Budget Tracker</h1>
+
+    <label class="toggle-switch">
+      <input type="checkbox" id="theme-toggle">
+      <span class="slider"></span>
+    </label>
+
     <div class="summary">
       <div><strong>Balance:</strong> $<span id="balance">0.00</span></div>
       <div><strong>Income:</strong> $<span id="income">0.00</span></div>
       <div><strong>Expenses:</strong> $<span id="expenses">0.00</span></div>
     </div>
 
+    <div class="chart-container">
+      <canvas id="budgetChart"></canvas>
+    </div>
+
     <form id="transaction-form">
-      <input type="text" id="description" placeholder="Description" required />
-      <input type="number" id="amount" placeholder="Amount (+/-)" required />
+      <label for="description">Description</label>
+      <input type="text" id="description" placeholder="e.g., Freelance, Rent" required />
+
+      <label for="type">Transaction Type</label>
+      <select id="type">
+        <option value="income">Income</option>
+        <option value="expense">Expense</option>
+      </select>
+
+      <label for="amount">Amount</label>
+      <input type="number" id="amount" placeholder="e.g., 500" required />
+
       <button type="submit">Add Transaction</button>
     </form>
 
     <ul id="transaction-list" class="transactions"></ul>
   </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

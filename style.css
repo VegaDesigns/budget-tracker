@@ -1,34 +1,100 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
 body {
-  font-family: Arial, sans-serif;
-  background-color: #f5f5f5;
-  padding: 2rem;
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(to bottom, #f0f0f0, #ffffff);
+  color: #333;
   margin: 0;
+  padding: 2rem;
+  transition: background-color 0.3s, color 0.3s;
+  overflow-x: hidden;
 }
 
 .container {
-  max-width: 500px;
+  max-width: 600px;
   margin: auto;
-  background: white;
+  background: #fafafa;
   padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  transform: translateY(4px);
 }
 
 h1 {
+  font-size: 2rem;
+  font-weight: 600;
   text-align: center;
+  margin-bottom: 2rem;
 }
 
 .summary {
   display: flex;
+  gap: 1rem;
   justify-content: space-between;
-  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+
+.summary div {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  flex: 1;
+  text-align: center;
+  min-width: 30%;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.chart-container {
+  background: #ffffff;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  margin-bottom: 2rem;
 }
 
 form {
+  background: #ffffff;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+form label {
+  font-weight: 600;
+  margin-top: 0.5rem;
+}
+
+form input,
+form select {
+  padding: 0.6rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #f9f9f9;
+}
+
+form button {
+  background-color: #2ecc71;
+  color: white;
+  font-weight: bold;
+  border: none;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+form button:hover {
+  background-color: #27ae60;
 }
 
 .transactions {
@@ -39,12 +105,153 @@ form {
 .transactions li {
   display: flex;
   justify-content: space-between;
-  padding: 0.5rem;
-  background: #eee;
-  margin-bottom: 0.5rem;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
   border-left: 5px solid #2ecc71;
+  background-color: #e8f5e9;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.03);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  flex-wrap: wrap;
 }
 
 .transactions li.expense {
   border-color: #e74c3c;
+  background-color: #fdecea;
+}
+
+.transactions li span {
+  font-weight: bold;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.transactions li button.delete-btn {
+  background: transparent;
+  border: none;
+  color: #888;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  margin-left: auto;
+}
+
+.transactions li:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.06);
+}
+
+.transactions li button.delete-btn:hover {
+  color: #e74c3c;
+}
+
+/* Toggle Switch */
+.toggle-switch {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+}
+
+.toggle-switch input {
+  display: none;
+}
+
+.toggle-switch .slider {
+  width: 40px;
+  height: 20px;
+  background: #ccc;
+  border-radius: 20px;
+  display: inline-block;
+  position: relative;
+  cursor: pointer;
+}
+
+.toggle-switch .slider::before {
+  content: "";
+  width: 18px;
+  height: 18px;
+  background: white;
+  border-radius: 50%;
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  transition: all 0.3s;
+}
+
+.toggle-switch input:checked + .slider::before {
+  transform: translateX(20px);
+}
+
+.toggle-switch input:checked + .slider {
+  background: #2ecc71;
+}
+
+/* Dark Mode */
+body.dark {
+  background: linear-gradient(to bottom, #1e1e1e, #2a2a2a);
+  color: #f5f5f5;
+}
+
+body.dark .container {
+  background-color: #2c2c2c;
+}
+
+body.dark .summary div,
+body.dark .chart-container,
+body.dark form {
+  background-color: #3a3a3a;
+  color: #f5f5f5;
+}
+
+body.dark input,
+body.dark select {
+  background: #555;
+  color: #fff;
+  border: 1px solid #666;
+}
+
+body.dark .transactions li.income {
+  background-color: #2e7d32;
+}
+
+body.dark .transactions li.expense {
+  background-color: #c62828;
+}
+
+body.dark .delete-btn:hover {
+  color: #ff6b6b;
+}
+
+.delete-btn i {
+    pointer-events: none;
+  }
+
+
+/* Responsive */
+@media (max-width: 600px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .summary {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .transactions li {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .transactions li span,
+  .transactions li button.delete-btn {
+    align-self: flex-end;
+  }
+
+  form input, form select, form button {
+    width: 100%;
+  }
 }

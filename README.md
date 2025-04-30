@@ -1,46 +1,93 @@
 # Budget Tracker
 
-A simple budget tracker app built with HTML, CSS, and JavaScript using localStorage. Easily add and track income and expenses with a clean, responsive interface.
+A simple budget tracker app built with HTML, CSS, and JavaScript using `localStorage`. It helps users track income and expenses with a clean, responsive UI and real-time visual feedback.
+
+---
 
 ## ✅ Features
-- Add income and expense transactions
-- View balance, total income, and total expenses
-- Stores data in localStorage
+
+- Add income and expenses  
+- Real-time balance, income, and expense display  
+- Responsive Chart.js graph  
+- Delete transactions with a trash icon  
+- Dark mode toggle (saved in localStorage)  
+- Mobile-first responsive layout  
+- Persistent storage via localStorage  
+
+---
+
+## 🧠 Development Journey
+
+### Phase 1: MVP Build  
+**Goal:** Get the core app working with input, storage, and display.
+
+**What Went Wrong:**  
+- `localStorage` kept saving bad data and everything kept showed up as income because expenses weren’t negative.  
+- Calculations were off. The balance just equaled income.  
+- The UI was confusing. Users would have to type `-200` for expenses.
+
+**Fixes:**  
+- Cleared `localStorage` and updated the logic to store expenses as negative numbers.  
+- Added a dropdown to let users choose “Income” or “Expense”.  
+- Adjusted math logic to calculate actual balance correctly.
+
+---
+
+### Phase 2: UI/UX + Visual Feedback  
+**Goal:** Make it feel like a modern, professional product.
+
+**What Went Wrong:**  
+- Chart.js duplicated charts every time a transaction was added.  
+- Dark mode wouldn’t persist on refresh.  
+- The layout felt clunky. The spacing was inconsistent, and mobile experience wasn’t great.
+
+**Fixes:**  
+- Used `.destroy()` on the Chart instance before re-rendering to stop duplicates.  
+- Saved dark mode preference in `localStorage` and applied it on page load.  
+- Redesigned the layout using Flexbox, added spacing, cleaned up form flow, and polished styles to match modern UX expectations.
+
+---
 
 ## 🏁 Phase 1: MVP Build (Completed)
-- [x] Static HTML layout
-- [x] Styled with modern CSS
-- [x] Add transaction form
-- [x] Dynamic balance, income, and expense display
-- [x] localStorage integration
+
+- [x] Static HTML layout  
+- [x] Styled with modern CSS  
+- [x] Add transaction form  
+- [x] Dynamic balance, income, and expense display  
+- [x] `localStorage` integration  
 - [x] Initial mobile responsiveness
+
+---
 
 ## 🔧 Planned Upgrades
 
 ### Phase 2: UI/UX Enhancements
-- [ ] Color-coded tags for income/expenses
-- [ ] Mobile responsive design polish
-- [ ] Visual charts using Chart.js
+- [x] Color-coded tags for income/expenses  
+- [x] Mobile responsive polish  
+- [x] Visual charts using Chart.js  
+- [x] Dark mode with toggle & persistence  
+- [x] Polished form and layout styling  
 
 ### Phase 3: Functional Features
-- [ ] Ability to delete transactions
-- [ ] Edit existing transactions
-- [ ] Filter by date or category
-- [ ] Set monthly budget goals
-- [ ] Export data as CSV
+- [x] Delete transactions  
+- [ ] Edit existing transactions  
+- [ ] Filter by date or category  
+- [ ] Monthly budget goals  
+- [ ] Export to CSV
 
-### Phase 4: Framework Upgrade (Optional)
-- [ ] Rebuild in React or Vue
-- [ ] Use Context API or Redux for state
-- [ ] Deploy on Netlify or Vercel
+### Phase 4: Framework Upgrade
+- [ ] Rebuild in React or Vue  
+- [ ] State management with Context API or Redux  
+- [ ] Deploy via Netlify or Vercel  
 
-### Phase 5: Backend Features (Optional)
-- [ ] Add authentication (login system)
-- [ ] Store user data with MongoDB or Supabase
-- [ ] Add Express.js backend with REST API
+### Phase 5: Backend Features
+- [ ] Add user authentication  
+- [ ] Store data in MongoDB or Supabase  
+- [ ] Build REST API with Express.js  
 
-## 📦 Setup
-Just open `index.html` in your browser to use the app.
+---
 
-## 🌐 Live Site
-[Coming Soon – Deploying via GitHub Pages]
+## 🌐 Live Projects
+
+- 🔗 [Budget Tracker Live](https://vegadesigns.github.io/budget-tracker)  
+- 🔗 [My Developer Portfolio](https://vegadesigns.github.io/portfolio)
