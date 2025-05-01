@@ -104,6 +104,7 @@ form button:hover {
 
 .transactions li {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
   gap: 1rem;
@@ -115,7 +116,6 @@ form button:hover {
   box-shadow: 0 4px 8px rgba(0,0,0,0.03);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   position: relative;
-  flex-wrap: wrap;
 }
 
 .transactions li.expense {
@@ -129,26 +129,59 @@ form button:hover {
   flex-shrink: 0;
 }
 
-.transactions li button.delete-btn {
-  background: transparent;
-  border: none;
-  color: #888;
-  font-size: 1.2rem;
-  cursor: pointer;
-  transition: color 0.2s ease;
+.transactions li .desc {
+  flex: 1;
+}
+
+.transactions li .amount {
   margin-left: auto;
 }
 
-.transactions li:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0,0,0,0.06);
+.transactions li .actions {
+  display: flex;
+  gap: 0.3rem;
 }
 
-.transactions li button.delete-btn:hover {
+.edit-desc,
+.edit-type,
+.edit-amount {
+  padding: 0.5rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.edit-desc {
+  flex: 1;
+  min-width: 100px;
+}
+
+.edit-amount {
+  width: 100px;
+  text-align: right;
+}
+
+.edit-type {
+  width: 110px;
+}
+
+.actions button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  color: #555;
+  transition: color 0.2s ease;
+}
+
+.actions button:hover {
+  color: #2ecc71;
+}
+
+.actions button i.fa-times:hover {
   color: #e74c3c;
 }
 
-/* Toggle Switch */
 .toggle-switch {
   position: absolute;
   top: 1rem;
@@ -224,11 +257,6 @@ body.dark .transactions li.expense {
 body.dark .delete-btn:hover {
   color: #ff6b6b;
 }
-
-.delete-btn i {
-    pointer-events: none;
-  }
-
 
 /* Responsive */
 @media (max-width: 600px) {

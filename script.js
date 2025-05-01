@@ -1,3 +1,4 @@
+
 const balanceEl = document.getElementById('balance');
 const incomeEl = document.getElementById('income');
 const expensesEl = document.getElementById('expenses');
@@ -11,7 +12,7 @@ const themeToggle = document.getElementById('theme-toggle');
 let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
 let chartInstance = null;
 
-// 🌓 Apply saved theme on load
+// Apply saved theme on load
 window.addEventListener('DOMContentLoaded', () => {
   const savedTheme = localStorage.getItem('theme');
   if (savedTheme === 'dark') {
@@ -37,12 +38,14 @@ function addTransactionToDOM(transaction) {
   const sign = transaction.amount < 0 ? '-' : '+';
   const item = document.createElement('li');
   item.classList.add(transaction.amount < 0 ? 'expense' : 'income');
+  item.setAttribute('data-id', transaction.id);
   item.innerHTML = `
-    ${transaction.description}
-    <span>${sign}$${Math.abs(transaction.amount).toFixed(2)}</span>
-    <button class="delete-btn" onclick="deleteTransaction(${transaction.id})">
-      <i class="fas fa-trash-alt"></i>
-    </button>
+    <span class="desc">${transaction.description}</span>
+    <span class="amount">${sign}$${Math.abs(transaction.amount).toFixed(2)}</span>
+    <div class="actions">
+      <button class="edit-btn" onclick="editTransaction(${transaction.id})"><i class="fas fa-edit"></i></button>
+      <button class="delete-btn" onclick="deleteTransaction(${transaction.id})"><i class="fas fa-trash-alt"></i></button>
+    </div>
   `;
   transactionList.appendChild(item);
 }
@@ -74,7 +77,6 @@ function addTransaction(e) {
   localStorage.setItem('transactions', JSON.stringify(transactions));
   updateUI();
 
-  // Reset form
   descriptionInput.value = '';
   amountInput.value = '';
   typeInput.value = 'income';
@@ -83,6 +85,49 @@ function addTransaction(e) {
 function deleteTransaction(id) {
   transactions = transactions.filter(t => t.id !== id);
   localStorage.setItem('transactions', JSON.stringify(transactions));
+  updateUI();
+}
+
+function editTransaction(id) {
+  const transaction = transactions.find(t => t.id === id);
+  const item = document.querySelector(`[data-id='${id}']`);
+
+  item.innerHTML = `
+    <input type="text" class="edit-desc" value="${transaction.description}" />
+    <select class="edit-type">
+      <option value="income" ${transaction.amount > 0 ? 'selected' : ''}>Income</option>
+      <option value="expense" ${transaction.amount < 0 ? 'selected' : ''}>Expense</option>
+    </select>
+    <input type="number" class="edit-amount" value="${Math.abs(transaction.amount)}" />
+    <div class="actions">
+      <button onclick="saveTransaction(${id})"><i class="fas fa-check"></i></button>
+      <button onclick="cancelEdit(${id})"><i class="fas fa-times"></i></button>
+    </div>
+  `;
+}
+
+function saveTransaction(id) {
+  const item = document.querySelector(`[data-id='${id}']`);
+  const desc = item.querySelector('.edit-desc').value.trim();
+  const amount = parseFloat(item.querySelector('.edit-amount').value);
+  const type = item.querySelector('.edit-type').value;
+
+  if (!desc || isNaN(amount) || amount <= 0) return;
+
+  const index = transactions.findIndex(t => t.id === id);
+  const signedAmount = type === "expense" ? -Math.abs(amount) : Math.abs(amount);
+
+  transactions[index] = {
+    ...transactions[index],
+    description: desc,
+    amount: signedAmount
+  };
+
+  localStorage.setItem('transactions', JSON.stringify(transactions));
+  updateUI();
+}
+
+function cancelEdit(id) {
   updateUI();
 }
 
@@ -106,7 +151,6 @@ function renderChart(income, expenses) {
   });
 }
 
-// 🌗 Toggle and persist dark mode
 themeToggle.addEventListener('change', () => {
   document.body.classList.toggle('dark');
   const isDark = document.body.classList.contains('dark');
