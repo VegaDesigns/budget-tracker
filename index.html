@@ -27,9 +27,21 @@
       <canvas id="budgetChart"></canvas>
     </div>
 
+    <div class="filters">
+      <label for="filter-category">Filter by Category</label>
+      <select id="filter-category">
+        <option value="all">All</option>
+        <option value="salary">Salary</option>
+        <option value="food">Food</option>
+        <option value="rent">Rent</option>
+        <option value="entertainment">Entertainment</option>
+        <option value="misc">Misc</option>
+      </select>
+    </div>
+
     <form id="transaction-form">
       <label for="description">Description</label>
-      <input type="text" id="description" placeholder="e.g., Freelance, Rent" required />
+      <input type="text" id="description" placeholder="e.g., Rent, Groceries" required />
 
       <label for="type">Transaction Type</label>
       <select id="type">
@@ -39,6 +51,15 @@
 
       <label for="amount">Amount</label>
       <input type="number" id="amount" placeholder="e.g., 500" required />
+
+      <label for="category">Category</label>
+      <select id="category" required>
+        <option value="salary">Salary</option>
+        <option value="food">Food</option>
+        <option value="rent">Rent</option>
+        <option value="entertainment">Entertainment</option>
+        <option value="misc">Misc</option>
+      </select>
 
       <button type="submit">Add Transaction</button>
     </form>
