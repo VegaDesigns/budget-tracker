@@ -70,8 +70,9 @@ A simple budget tracker app built with HTML, CSS, and JavaScript using `localSto
 
 ### Phase 3: Functional Features
 - [x] Delete transactions  
-- [ ] Edit existing transactions  
-- [ ] Filter by date or category  
+- [x] Edit existing transactions (inline)  
+- [x] Filter by category  
+- [x] Automatically assign transaction date using local time  
 - [ ] Monthly budget goals  
 - [ ] Export to CSV
 

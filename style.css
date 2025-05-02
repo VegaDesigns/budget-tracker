@@ -56,7 +56,6 @@ h1 {
   margin-bottom: 2rem;
 }
 
-/* 🔍 Filter UI Section */
 .filters {
   display: flex;
   flex-wrap: wrap;
@@ -75,8 +74,7 @@ h1 {
   min-width: 100px;
 }
 
-.filters select,
-.filters input[type="date"] {
+.filters select {
   padding: 0.5rem;
   font-size: 1rem;
   border: 1px solid #ccc;
@@ -166,6 +164,13 @@ form button:hover {
   margin-left: auto;
 }
 
+.transactions li .date {
+  font-size: 0.9rem;
+  color: #777;
+  margin-left: auto;
+  margin-right: 1rem;
+}
+
 .transactions li .actions {
   display: flex;
   gap: 0.3rem;
@@ -174,8 +179,7 @@ form button:hover {
 .edit-desc,
 .edit-type,
 .edit-amount,
-.edit-category,
-.edit-date {
+.edit-category {
   padding: 0.5rem;
   font-size: 1rem;
   border: 1px solid #ccc;
@@ -197,10 +201,6 @@ form button:hover {
   width: 110px;
 }
 
-.edit-date {
-  width: 150px;
-}
-
 .actions button {
   background: transparent;
   border: none;
@@ -218,16 +218,13 @@ form button:hover {
   color: #e74c3c;
 }
 
-/* 🌙 Dark mode support */
+/* Dark mode */
 body.dark {
   background: linear-gradient(to bottom, #1e1e1e, #2a2a2a);
   color: #f5f5f5;
 }
 
-body.dark .container {
-  background-color: #2c2c2c;
-}
-
+body.dark .container,
 body.dark .summary div,
 body.dark .chart-container,
 body.dark form,
@@ -249,10 +246,6 @@ body.dark .transactions li.income {
 
 body.dark .transactions li.expense {
   background-color: #c62828;
-}
-
-body.dark .delete-btn:hover {
-  color: #ff6b6b;
 }
 
 .toggle-switch {
@@ -295,7 +288,7 @@ body.dark .delete-btn:hover {
   background: #2ecc71;
 }
 
-/* 📱 Responsive */
+/* Responsive */
 @media (max-width: 600px) {
   .container {
     padding: 1rem;
@@ -316,11 +309,65 @@ body.dark .delete-btn:hover {
     align-self: flex-end;
   }
 
-  form input,
-  form select,
-  form button,
-  .filters select,
-  .filters input[type="date"] {
+  form input, form select, form button,
+  .filters select {
     width: 100%;
   }
+}
+
+/* === Monthly Budget Goal === */
+.budget-goal-card {
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+#budget-form {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+#budget-form input {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  font-size: 1rem;
+  background-color: var(--card-bg);
+  color: var(--text);
+}
+
+.budget-status {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+#budget-summary {
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.budget-progress {
+  height: 20px;
+  width: 100%;
+  background-color: #e5e7eb;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.budget-bar-fill {
+  height: 100%;
+  background-color: var(--accent);
+  transition: width 0.3s ease;
+}
+
+/* Dark mode override */
+body.dark .budget-progress {
+  background-color: #374151;
+}
+
+body.dark .budget-bar-fill {
+  background-color: #3b82f6;
 }

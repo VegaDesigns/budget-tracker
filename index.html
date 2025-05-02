@@ -39,6 +39,21 @@
       </select>
     </div>
 
+    <div class="card budget-goal-card">
+      <h2>Monthly Budget Goal</h2>
+      <form id="budget-form">
+        <input type="number" id="budget-input" placeholder="Set your monthly budget..." min="1" required />
+        <button type="submit" class="add-btn">Set Budget</button>
+      </form>
+
+      <div class="budget-status">
+        <p id="budget-summary">No budget set yet.</p>
+        <div class="budget-progress">
+          <div id="budget-bar" class="budget-bar-fill" style="width: 0%;"></div>
+        </div>
+      </div>
+    </div>
+
     <form id="transaction-form">
       <label for="description">Description</label>
       <input type="text" id="description" placeholder="e.g., Rent, Groceries" required />
