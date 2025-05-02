@@ -1,3 +1,4 @@
+// DOM Elements & Constants
 const balanceEl = document.getElementById('balance');
 const incomeEl = document.getElementById('income');
 const expensesEl = document.getElementById('expenses');
@@ -15,11 +16,12 @@ const budgetInput = document.getElementById('budget-input');
 const budgetSummary = document.getElementById('budget-summary');
 const budgetBar = document.getElementById('budget-bar');
 
+// Application State
 let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
 let chartInstance = null;
 let monthlyBudget = parseFloat(localStorage.getItem('monthlyBudget')) || null;
 
-// ✅ Load theme
+// Initialization
 window.addEventListener('DOMContentLoaded', () => {
   const savedTheme = localStorage.getItem('theme');
   if (savedTheme === 'dark') {
@@ -29,20 +31,20 @@ window.addEventListener('DOMContentLoaded', () => {
   updateUI();
 });
 
-// ✅ Theme toggle
+// Theme Toggle
 themeToggle.addEventListener('change', () => {
   document.body.classList.toggle('dark');
   const isDark = document.body.classList.contains('dark');
   localStorage.setItem('theme', isDark ? 'dark' : 'light');
 });
 
-// ✅ Format date
+// Utility: Date Formatting
 function formatDate(dateString) {
   const [year, month, day] = dateString.split("-");
   return `${parseInt(month)}/${parseInt(day)}/${year.slice(-2)}`;
 }
 
-// ✅ Budget Utilities
+// Budget Goal Functions
 function getTotalExpenses() {
   return transactions
     .filter(t => t.amount < 0)
@@ -55,7 +57,6 @@ function updateBudgetStatus() {
     budgetBar.style.width = '0%';
     return;
   }
-
   const spent = getTotalExpenses();
   const percent = Math.min((spent / monthlyBudget) * 100, 100);
   budgetSummary.textContent = `$${spent.toFixed(2)} of $${monthlyBudget.toFixed(2)} spent (${percent.toFixed(0)}%)`;
@@ -72,21 +73,20 @@ budgetForm?.addEventListener('submit', (e) => {
   budgetInput.value = '';
 });
 
-// ✅ Totals and Chart
+// Totals and Chart Update
 function updateTotals(filtered) {
   const amounts = filtered.map(t => t.amount);
   const income = amounts.filter(v => v > 0).reduce((a, b) => a + b, 0);
   const expense = amounts.filter(v => v < 0).reduce((a, b) => a + b, 0);
-  const balance = income + expense;
 
-  balanceEl.textContent = balance.toFixed(2);
+  balanceEl.textContent = (income + expense).toFixed(2);
   incomeEl.textContent = income.toFixed(2);
   expensesEl.textContent = Math.abs(expense).toFixed(2);
 
   renderChart(income, expense);
 }
 
-// ✅ Add Transaction to UI
+// Transaction Rendering
 function addTransactionToDOM(transaction) {
   const sign = transaction.amount < 0 ? '-' : '+';
   const formattedDate = formatDate(transaction.date);
@@ -107,7 +107,7 @@ function addTransactionToDOM(transaction) {
   transactionList.appendChild(item);
 }
 
-// ✅ Update full UI
+// UI Refresh
 function updateUI() {
   transactionList.innerHTML = '';
   const filtered = getFilteredTransactions();
@@ -116,13 +116,13 @@ function updateUI() {
   updateBudgetStatus();
 }
 
-// ✅ Get filtered transactions
+// Filtering
 function getFilteredTransactions() {
   const cat = filterCategory?.value || "all";
   return transactions.filter(t => cat === "all" || t.category === cat);
 }
 
-// ✅ Add transaction logic
+// Add Transaction Logic
 function addTransaction(e) {
   e.preventDefault();
   const description = descriptionInput.value.trim();
@@ -135,15 +135,7 @@ function addTransaction(e) {
   const signedAmount = type === "expense" ? -Math.abs(amount) : Math.abs(amount);
   const date = new Date().toLocaleDateString('en-CA');
 
-  const newTransaction = {
-    id: Date.now(),
-    description,
-    amount: signedAmount,
-    category,
-    date
-  };
-
-  transactions.push(newTransaction);
+  transactions.push({ id: Date.now(), description, amount: signedAmount, category, date });
   localStorage.setItem('transactions', JSON.stringify(transactions));
   updateUI();
 
@@ -151,40 +143,42 @@ function addTransaction(e) {
   typeInput.value = 'income';
 }
 
-// ✅ Delete transaction
+// Delete Transaction
 function deleteTransaction(id) {
   transactions = transactions.filter(t => t.id !== id);
   localStorage.setItem('transactions', JSON.stringify(transactions));
   updateUI();
 }
 
-// ✅ Edit transaction inline
+// Inline Edit Transaction
 function editTransaction(id) {
   const transaction = transactions.find(t => t.id === id);
   const item = document.querySelector(`[data-id='${id}']`);
 
   item.innerHTML = `
-    <input type="text" class="edit-desc" value="${transaction.description}" />
-    <select class="edit-type">
-      <option value="income" ${transaction.amount > 0 ? 'selected' : ''}>Income</option>
-      <option value="expense" ${transaction.amount < 0 ? 'selected' : ''}>Expense</option>
-    </select>
-    <input type="number" class="edit-amount" value="${Math.abs(transaction.amount)}" />
-    <select class="edit-category">
-      <option value="salary" ${transaction.category === "salary" ? "selected" : ""}>Salary</option>
-      <option value="food" ${transaction.category === "food" ? "selected" : ""}>Food</option>
-      <option value="rent" ${transaction.category === "rent" ? "selected" : ""}>Rent</option>
-      <option value="entertainment" ${transaction.category === "entertainment" ? "selected" : ""}>Entertainment</option>
-      <option value="misc" ${transaction.category === "misc" ? "selected" : ""}>Misc</option>
-    </select>
-    <div class="actions">
-      <button onclick="saveTransaction(${id})"><i class="fas fa-check"></i></button>
-      <button onclick="cancelEdit(${id})"><i class="fas fa-times"></i></button>
+    <div class="edit-group">
+      <input type="text" class="edit-desc styled-input" value="${transaction.description}" />
+      <select class="edit-type styled-select">
+        <option value="income" ${transaction.amount > 0 ? 'selected' : ''}>Income</option>
+        <option value="expense" ${transaction.amount < 0 ? 'selected' : ''}>Expense</option>
+      </select>
+      <input type="number" class="edit-amount styled-input" value="${Math.abs(transaction.amount)}" />
+      <select class="edit-category styled-select">
+        <option value="salary" ${transaction.category === "salary" ? "selected" : ""}>Salary</option>
+        <option value="food" ${transaction.category === "food" ? "selected" : ""}>Food</option>
+        <option value="rent" ${transaction.category === "rent" ? "selected" : ""}>Rent</option>
+        <option value="entertainment" ${transaction.category === "entertainment" ? "selected" : ""}>Entertainment</option>
+        <option value="misc" ${transaction.category === "misc" ? "selected" : ""}>Misc</option>
+      </select>
+      <div class="actions">
+        <button onclick="saveTransaction(${id})"><i class="fas fa-check"></i></button>
+        <button onclick="cancelEdit(${id})"><i class="fas fa-times"></i></button>
+      </div>
     </div>
   `;
 }
 
-// ✅ Save updated transaction
+// Save Edited Transaction
 function saveTransaction(id) {
   const item = document.querySelector(`[data-id='${id}']`);
   const desc = item.querySelector('.edit-desc').value.trim();
@@ -195,27 +189,24 @@ function saveTransaction(id) {
   if (!desc || isNaN(amount) || amount <= 0 || !category) return;
 
   const index = transactions.findIndex(t => t.id === id);
-  const signedAmount = type === "expense" ? -Math.abs(amount) : Math.abs(amount);
-  const date = new Date().toLocaleDateString('en-CA');
-
   transactions[index] = {
     ...transactions[index],
     description: desc,
-    amount: signedAmount,
+    amount: type === "expense" ? -Math.abs(amount) : Math.abs(amount),
     category,
-    date
+    date: new Date().toLocaleDateString('en-CA')
   };
 
   localStorage.setItem('transactions', JSON.stringify(transactions));
   updateUI();
 }
 
-// ✅ Cancel edit
-function cancelEdit(id) {
+// Cancel Edit
+function cancelEdit() {
   updateUI();
 }
 
-// ✅ Render Chart.js
+// Render Chart.js Doughnut
 function renderChart(income, expenses) {
   const ctx = document.getElementById('budgetChart').getContext('2d');
   if (chartInstance) chartInstance.destroy();
@@ -229,12 +220,41 @@ function renderChart(income, expenses) {
         borderWidth: 1
       }]
     },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false
-    }
+    options: { responsive: true, maintainAspectRatio: false }
   });
 }
 
+// Event Listeners
 form.addEventListener('submit', addTransaction);
 filterCategory?.addEventListener('change', updateUI);
+
+// Export to CSV
+document.getElementById('export-btn')?.addEventListener('click', () => {
+  if (!transactions.length) {
+    alert("No transactions to export.");
+    return;
+  }
+
+  const headers = ["Description", "Amount", "Type", "Category", "Date"];
+  const rows = transactions.map(t => [
+    `"${t.description}"`,
+    t.amount,
+    t.amount < 0 ? "Expense" : "Income",
+    t.category,
+    formatDate(t.date)
+  ]);
+
+  const csvContent = [headers, ...rows]
+    .map(row => row.join(','))
+    .join('\n');
+
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement('a');
+  link.href = url;
+  link.setAttribute('download', 'transactions.csv');
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+});

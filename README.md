@@ -19,17 +19,17 @@ A simple budget tracker app built with HTML, CSS, and JavaScript using `localSto
 ## 🧠 Development Journey
 
 ### Phase 1: MVP Build  
-**Goal:** Get the core app working with input, storage, and display.
+**Goal:** Get the core add/store/display flow working.
 
 **What Went Wrong:**  
-- `localStorage` kept saving bad data and everything kept showed up as income because expenses weren’t negative.  
-- Calculations were off. The balance just equaled income.  
-- The UI was confusing. Users would have to type `-200` for expenses.
+- Expenses were saved as positives  
+- Balance calculation was incorrect  
+- Users had to type negative values manually  
 
 **Fixes:**  
-- Cleared `localStorage` and updated the logic to store expenses as negative numbers.  
-- Added a dropdown to let users choose “Income” or “Expense”.  
-- Adjusted math logic to calculate actual balance correctly.
+- Updated storage logic to save expenses as negatives  
+- Corrected the math for balance/income/expenses  
+- Added a dropdown to select Income vs. Expense
 
 ---
 
@@ -37,14 +37,31 @@ A simple budget tracker app built with HTML, CSS, and JavaScript using `localSto
 **Goal:** Make it feel like a modern, professional product.
 
 **What Went Wrong:**  
-- Chart.js duplicated charts every time a transaction was added.  
-- Dark mode wouldn’t persist on refresh.  
-- The layout felt clunky. The spacing was inconsistent, and mobile experience wasn’t great.
+- Charts duplicated on each update  
+- Dark mode didn’t persist  
+- Layout and spacing were inconsistent  
 
 **Fixes:**  
-- Used `.destroy()` on the Chart instance before re-rendering to stop duplicates.  
-- Saved dark mode preference in `localStorage` and applied it on page load.  
-- Redesigned the layout using Flexbox, added spacing, cleaned up form flow, and polished styles to match modern UX expectations.
+- Destroyed existing Chart before re-render  
+- Saved theme in localStorage  
+- Redesigned layout with Flexbox and uniform spacing 
+
+---
+
+### Phase 3: Functional Features
+**Goal:** Add all interactive features and clean up the code.
+
+**What Went Wrong:**  
+- Inline edits weren’t styled  
+- Budget bar didn’t always refresh  
+- CSV export was missing  
+- Date formatting was inconsistent  
+
+**Fixes:**  
+- Styled inline edits with shared input/select classes  
+- Moved `updateBudgetStatus()` into the main UI update flow  
+- Built and wired a CSV export function  
+- Centralized date formatting in `formatDate()`  
 
 ---
 
@@ -59,22 +76,20 @@ A simple budget tracker app built with HTML, CSS, and JavaScript using `localSto
 
 ---
 
-## 🔧 Planned Upgrades
-
-### Phase 2: UI/UX Enhancements
+### Phase 2: UI/UX Enhancements (Completed)
 - [x] Color-coded tags for income/expenses  
 - [x] Mobile responsive polish  
 - [x] Visual charts using Chart.js  
 - [x] Dark mode with toggle & persistence  
 - [x] Polished form and layout styling  
 
-### Phase 3: Functional Features
+### Phase 3: Functional Features (Completed)
 - [x] Delete transactions  
 - [x] Edit existing transactions (inline)  
 - [x] Filter by category  
 - [x] Automatically assign transaction date using local time  
-- [ ] Monthly budget goals  
-- [ ] Export to CSV
+- [x] Monthly budget goals  
+- [x] Export to CSV
 
 ### Phase 4: Framework Upgrade
 - [ ] Rebuild in React or Vue  
