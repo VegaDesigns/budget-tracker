@@ -7,11 +7,9 @@ export default function TransactionItem({ tx, onDelete }) {
   const isExpense = tx.amount < 0;
   const sign = isExpense ? "-" : "+";
 
-  // Format the ISO date string as M/D/YY
-  const displayDate = new Date(tx.date).toLocaleDateString("en-US", {
-    month: "numeric",
-    day: "numeric",
-    year: "2-digit",
+  const displayDate = new Date(tx.date).toLocaleString(undefined, {
+    dateStyle: "short",
+    timeStyle: "short",
   });
 
   return (

@@ -1,80 +1,41 @@
-import React, { useState, useEffect } from "react";
-import BudgetChart from "./components/BudgetChart";
-import TransactionItem from "./components/TransactionItem";
-import TransactionForm from "./components/TransactionForm";
+import React, { useState } from "react";
+import { useBudget } from "./context/BudgetContext";
 import { FaSun, FaMoon } from "react-icons/fa";
+import BudgetChart from "./components/BudgetChart";
+import TransactionForm from "./components/TransactionForm";
+import TransactionItem from "./components/TransactionItem";
 
-function App() {
-  // Load persisted state or use defaults
-  const [transactions, setTransactions] = useState(() => {
-    const s = localStorage.getItem("transactions");
-    return s ? JSON.parse(s) : [];
-  });
-  const [monthlyBudget, setMonthlyBudget] = useState(() => {
-    const s = localStorage.getItem("monthlyBudget");
-    return s ? JSON.parse(s) : null;
-  });
+export default function App() {
+  // pull global state & dispatch from context
+  const { state, dispatch } = useBudget();
+  const { transactions, monthlyBudget, theme } = state;
+
+  // local UI filter
   const [filter, setFilter] = useState("all");
-  const [theme, setTheme] = useState(
-    () => localStorage.getItem("theme") || "light"
-  );
 
-  // Persist transactions whenever they change
-  useEffect(() => {
-    localStorage.setItem("transactions", JSON.stringify(transactions));
-  }, [transactions]);
-
-  // Persist budget whenever it changes
-  useEffect(() => {
-    if (monthlyBudget !== null) {
-      localStorage.setItem("monthlyBudget", JSON.stringify(monthlyBudget));
-    }
-  }, [monthlyBudget]);
-
-  // Apply theme and persist it
-  useEffect(() => {
-    document.body.classList.toggle("dark", theme === "dark");
-    localStorage.setItem("theme", theme);
-  }, [theme]);
-
-  // Calculate totals
-  const totalIncome = transactions
+  /* ---------- derived totals ---------- */
+  const income = transactions
     .filter((t) => t.amount > 0)
     .reduce((sum, t) => sum + t.amount, 0);
-  const totalExpenses = transactions
+
+  const expense = transactions
     .filter((t) => t.amount < 0)
     .reduce((sum, t) => sum + Math.abs(t.amount), 0);
 
-  // Filter transactions by category
-  const filteredTransactions =
+  const filteredTx =
     filter === "all"
       ? transactions
       : transactions.filter((t) => t.category === filter);
 
-  // Add a new transaction
-  const addTransaction = (tx) => setTransactions((prev) => [...prev, tx]);
+  /* ---------- handlers (dispatch wrappers) ---------- */
+  const addTx = (tx) => dispatch({ type: "ADD_TX", payload: tx });
+  const delTx = (id) => dispatch({ type: "DELETE_TX", payload: id });
+  const setBudget = (n) => dispatch({ type: "SET_BUDGET", payload: n });
+  const toggleTh = () => dispatch({ type: "TOGGLE_THEME" });
 
-  // Delete an existing transaction
-  const deleteTransaction = (id) =>
-    setTransactions((prev) => prev.filter((t) => t.id !== id));
-
-  // Handle category filter change
-  const handleFilter = (e) => setFilter(e.target.value);
-
-  // Set a new monthly budget
-  const handleBudgetSubmit = (e) => {
-    e.preventDefault();
-    const val = parseFloat(e.target.budget.value);
-    if (val > 0) setMonthlyBudget(val);
-    e.target.reset();
-  };
-
-  // Export all transactions as CSV
+  /* ---------- CSV export (uses transactions) ---------- */
   const exportCSV = () => {
-    if (transactions.length === 0) {
-      alert("No transactions to export.");
-      return;
-    }
+    if (!transactions.length) return alert("No transactions to export.");
     const headers = ["Description", "Amount", "Type", "Category", "Date"];
     const rows = transactions.map((t) => [
       `"${t.description}"`,
@@ -91,51 +52,55 @@ function App() {
     link.click();
   };
 
+  /* ---------- render ---------- */
   return (
     <div className="container">
-      {/* Header */}
+      {/* header */}
       <div className="header-bar">
         <h1>Budget Tracker</h1>
         <div className="header-actions">
           <button onClick={exportCSV}>Export CSV</button>
+
           <label className="toggle-switch" title="Toggle dark mode">
             <input
               type="checkbox"
               checked={theme === "dark"}
-              onChange={() =>
-                setTheme((t) => (t === "light" ? "dark" : "light"))
-              }
+              onChange={toggleTh}
             />
             <span className="slider">
-              {/* show ☀️ in light mode, 🌙 in dark mode */}
-              {theme === "dark" ? <FaMoon /> : <FaSun />}
+              <FaSun className="icon sun" />
+              <FaMoon className="icon moon" />
             </span>
           </label>
         </div>
       </div>
 
-      {/* Summary */}
+      {/* summary cards */}
       <div className="summary">
         <div>
-          <strong>Balance:</strong> ${(totalIncome - totalExpenses).toFixed(2)}
+          <strong>Balance:</strong> ${(income - expense).toFixed(2)}
         </div>
         <div>
-          <strong>Income:</strong> ${totalIncome.toFixed(2)}
+          <strong>Income:</strong> ${income.toFixed(2)}
         </div>
         <div>
-          <strong>Expenses:</strong> ${totalExpenses.toFixed(2)}
+          <strong>Expenses:</strong> ${expense.toFixed(2)}
         </div>
       </div>
 
-      {/* Chart */}
+      {/* chart */}
       <div className="chart-container">
-        <BudgetChart income={totalIncome} expenses={totalExpenses} />
+        <BudgetChart income={income} expenses={expense} />
       </div>
 
-      {/* Filter */}
+      {/* category filter */}
       <div className="filters">
-        <label htmlFor="filter">Filter by Category</label>
-        <select id="filter" value={filter} onChange={handleFilter}>
+        <label htmlFor="filter">Filter</label>
+        <select
+          id="filter"
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+        >
           <option value="all">All</option>
           <option value="salary">Salary</option>
           <option value="food">Food</option>
@@ -145,41 +110,40 @@ function App() {
         </select>
       </div>
 
-      {/* Budget Goal */}
+      {/* monthly budget card */}
       <div className="card budget-goal-card">
-        <h2>Monthly Budget Goal</h2>
-        <form id="budget-form" onSubmit={handleBudgetSubmit}>
+        <h2>Monthly Budget</h2>
+        <form
+          id="budget-form"
+          onSubmit={(e) => {
+            e.preventDefault();
+            const val = parseFloat(e.target.budget.value);
+            if (val > 0) setBudget(val);
+            e.target.reset();
+          }}
+        >
           <input
             name="budget"
             type="number"
-            placeholder="Set your monthly budget..."
             min="1"
+            placeholder="Set budget…"
             required
           />
-          <button type="submit" className="budget-btn">
-            Set Budget
-          </button>
+          <button className="budget-btn">Set Budget</button>
         </form>
+
         <div className="budget-status">
-          {monthlyBudget ? (
+          {monthlyBudget !== null ? (
             <>
               <p id="budget-summary">
-                ${totalExpenses.toFixed(2)} of ${monthlyBudget.toFixed(2)} spent
-                (
-                {Math.min((totalExpenses / monthlyBudget) * 100, 100).toFixed(
-                  0
-                )}
-                % )
+                ${expense.toFixed(2)} of ${monthlyBudget.toFixed(2)} spent (
+                {Math.min((expense / monthlyBudget) * 100, 100).toFixed(0)}%)
               </p>
               <div className="budget-progress">
                 <div
-                  id="budget-bar"
                   className="budget-bar-fill"
                   style={{
-                    width: `${Math.min(
-                      (totalExpenses / monthlyBudget) * 100,
-                      100
-                    )}%`,
+                    width: `${Math.min((expense / monthlyBudget) * 100, 100)}%`,
                   }}
                 />
               </div>
@@ -190,15 +154,15 @@ function App() {
         </div>
       </div>
 
-      {/* Form & List */}
-      <TransactionForm onAdd={addTransaction} />
+      {/* transaction form */}
+      <TransactionForm onAdd={addTx} />
+
+      {/* transaction list */}
       <ul className="transactions">
-        {filteredTransactions.map((tx) => (
-          <TransactionItem key={tx.id} tx={tx} onDelete={deleteTransaction} />
+        {filteredTx.map((tx) => (
+          <TransactionItem key={tx.id} tx={tx} onDelete={delTx} />
         ))}
       </ul>
     </div>
   );
 }
-
-export default App;

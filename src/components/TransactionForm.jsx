@@ -33,7 +33,7 @@ export default function TransactionForm({ onAdd }) {
       description: description.trim(),
       amount: signed,
       category,
-      date: new Date().toLocaleDateString("en-CA"), // YYYY-MM-DD
+      date: Date.now(),
     };
 
     // Pass new transaction up and reset form

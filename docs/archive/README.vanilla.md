@@ -1,62 +1,122 @@
-# Budget Tracker — Vanilla JS Archive
+# Budget Tracker
 
-_Phase 1 (completed); future development continues in React_
-
-This repository began as a pure **HTML / CSS / JavaScript** exercise to track personal income and expenses with real‑time feedback and persistent storage.  
-After delivering a stable MVP, the roadmap pivoted to a full **React rewrite** (now under active development on the `phase-react` branch).  
-This file freezes the original vanilla implementation for reference.
+A simple budget tracker app built with HTML, CSS, and JavaScript using `localStorage`. It helps users track income and expenses with a clean, responsive UI and real-time visual feedback.
 
 ---
 
-## ✨ Phase 1 Features
+## ✅ Features
 
-| Feature                              | Tech                         |
-| ------------------------------------ | ---------------------------- |
-| Add / delete income & expenses       | DOM + localStorage           |
-| Live balance, income, expense totals | JS array methods             |
-| Doughnut chart                       | Chart.js 3                   |
-| Dark / light theme                   | CSS variables + localStorage |
-| Monthly budget bar                   | Vanilla JS                   |
-| CSV export                           | Blob API                     |
-| Mobile‑first layout                  | Flexbox / media queries      |
+- Add income and expenses
+- Real-time balance, income, and expense display
+- Responsive Chart.js graph
+- Delete transactions with a trash icon
+- Dark mode toggle (saved in localStorage)
+- Mobile-first responsive layout
+- Persistent storage via localStorage
 
 ---
 
-## 🧠 Development Journey
+## 🧠 Development Journey
 
-> **Goal:** deliver a working MVP with clean UI and persistent data.
+### Phase 1: MVP Build
 
-### Milestones
+**Goal:** Get the core add/store/display flow working.
 
-1. **MVP scaffold** – static HTML → dynamic list with `localStorage`.
-2. **Visual feedback** – integrated Chart.js and responsive styling.
-3. **Functional polish** – budget goals, CSV export, inline deletes.
+**What Went Wrong:**
 
-With the core feature‑set complete and code complexity growing, the project moved to **Phase 2: React rewrite** for better component structure and long‑term scalability.
+- Expenses were saved as positives
+- Balance calculation was incorrect
+- Users had to type negative values manually
 
----
+**Fixes:**
 
-## 🛠️ Lessons Learned
-
-| Challenge                                     | What I Did                                                         |
-| --------------------------------------------- | ------------------------------------------------------------------ |
-| Expenses stored as positives, breaking totals | Stored expenses as negative numbers and updated math helpers.      |
-| Chart duplicated after each transaction       | Destroyed the existing Chart.js instance before re‑render.         |
-| Dark mode reset on refresh                    | Saved theme preference to localStorage and applied on page load.   |
-| Budget bar didn’t refresh on delete           | Centralized total‑recalculation inside a single `updateUI()` call. |
-| CSV export missing UTF‑8 header               | Used `Blob` with `text/csv;charset=utf-8` for Excel compatibility. |
+- Updated storage logic to save expenses as negatives
+- Corrected the math for balance/income/expenses
+- Added a dropdown to select Income vs. Expense
 
 ---
 
-## 📈 Road Ahead
+### Phase 2: UI/UX + Visual Feedback
 
-Phase 1 is feature‑complete.  
-All new work—including Context API state, tests, and deployment—will occur in the React code‑base.
+**Goal:** Make it feel like a modern, professional product.
+
+**What Went Wrong:**
+
+- Charts duplicated on each update
+- Dark mode didn’t persist
+- Layout and spacing were inconsistent
+
+**Fixes:**
+
+- Destroyed existing Chart before re-render
+- Saved theme in localStorage
+- Redesigned layout with Flexbox and uniform spacing
 
 ---
 
-## Screenshots
+### Phase 3: Functional Features
 
-| Light                         | Dark                        |
-| ----------------------------- | --------------------------- |
-| ![Light mode](docs/light.png) | ![Dark mode](docs/dark.png) |
+**Goal:** Add all interactive features and clean up the code.
+
+**What Went Wrong:**
+
+- Inline edits weren’t styled
+- Budget bar didn’t always refresh
+- CSV export was missing
+- Date formatting was inconsistent
+
+**Fixes:**
+
+- Styled inline edits with shared input/select classes
+- Moved `updateBudgetStatus()` into the main UI update flow
+- Built and wired a CSV export function
+- Centralized date formatting in `formatDate()`
+
+---
+
+## 🏁 Phase 1: MVP Build (Completed)
+
+- [x] Static HTML layout
+- [x] Styled with modern CSS
+- [x] Add transaction form
+- [x] Dynamic balance, income, and expense display
+- [x] `localStorage` integration
+- [x] Initial mobile responsiveness
+
+---
+
+### Phase 2: UI/UX Enhancements (Completed)
+
+- [x] Color-coded tags for income/expenses
+- [x] Mobile responsive polish
+- [x] Visual charts using Chart.js
+- [x] Dark mode with toggle & persistence
+- [x] Polished form and layout styling
+
+### Phase 3: Functional Features (Completed)
+
+- [x] Delete transactions
+- [x] Edit existing transactions (inline)
+- [x] Filter by category
+- [x] Automatically assign transaction date using local time
+- [x] Monthly budget goals
+- [x] Export to CSV
+
+### Phase 4: Framework Upgrade
+
+- [ ] Rebuild in React or Vue
+- [ ] State management with Context API or Redux
+- [ ] Deploy via Netlify or Vercel
+
+### Phase 5: Backend Features
+
+- [ ] Add user authentication
+- [ ] Store data in MongoDB or Supabase
+- [ ] Build REST API with Express.js
+
+---
+
+## 🌐 Live Projects
+
+- 🔗 [Budget Tracker Live](https://vegadesigns.github.io/budget-tracker)
+- 🔗 [My Developer Portfolio](https://vegadesigns.github.io/portfolio)
