@@ -1,62 +1,63 @@
-# Budget Tracker — Vanilla JS Archive
+# Budget Tracker — Phase 2 (React 19)
 
-_Phase 1 (completed); future development continues in React_
-
-This repository began as a pure **HTML / CSS / JavaScript** exercise to track personal income and expenses with real‑time feedback and persistent storage.  
-After delivering a stable MVP, the roadmap pivoted to a full **React rewrite** (now under active development on the `phase-react` branch).  
-This file freezes the original vanilla implementation for reference.
+> Phase 2 is an in‑progress rewrite that modernises the UI, adopts React best practices,  
+> and sets the stage for powerful new features.
 
 ---
 
-## ✨ Phase 1 Features
+## 🎯 Phase 2 Goals
 
-| Feature                              | Tech                         |
-| ------------------------------------ | ---------------------------- |
-| Add / delete income & expenses       | DOM + localStorage           |
-| Live balance, income, expense totals | JS array methods             |
-| Doughnut chart                       | Chart.js 3                   |
-| Dark / light theme                   | CSS variables + localStorage |
-| Monthly budget bar                   | Vanilla JS                   |
-| CSV export                           | Blob API                     |
-| Mobile‑first layout                  | Flexbox / media queries      |
+1. **Fresh UX / UI**
 
----
+   - Clean, card‑based layout
+   - Smooth animations, accessible colour palette
+   - Sun / moon theme switch redesigned with icons
 
-## 🧠 Development Journey
+2. **Code Tightening**
 
-> **Goal:** deliver a working MVP with clean UI and persistent data.
+   - Move state to **Context API** + custom hooks
+   - Add **Prettier + Stylelint** auto‑format on commit
+   - 80 % unit‑test coverage (React Testing Library + Jest)
 
-### Milestones
-
-1. **MVP scaffold** – static HTML → dynamic list with `localStorage`.
-2. **Visual feedback** – integrated Chart.js and responsive styling.
-3. **Functional polish** – budget goals, CSV export, inline deletes.
-
-With the core feature‑set complete and code complexity growing, the project moved to **Phase 2: React rewrite** for better component structure and long‑term scalability.
+3. **Feature Planning** (see list below)
 
 ---
 
-## 🛠️ Lessons Learned
+## 💡 Feature Ideas Under Consideration
 
-| Challenge                                     | What I Did                                                         |
-| --------------------------------------------- | ------------------------------------------------------------------ |
-| Expenses stored as positives, breaking totals | Stored expenses as negative numbers and updated math helpers.      |
-| Chart duplicated after each transaction       | Destroyed the existing Chart.js instance before re‑render.         |
-| Dark mode reset on refresh                    | Saved theme preference to localStorage and applied on page load.   |
-| Budget bar didn’t refresh on delete           | Centralized total‑recalculation inside a single `updateUI()` call. |
-| CSV export missing UTF‑8 header               | Used `Blob` with `text/csv;charset=utf-8` for Excel compatibility. |
+| Category          | Idea                   | Tech / Why It’s Cool                           |
+| ----------------- | ---------------------- | ---------------------------------------------- |
+| **Data**          | Recurring transactions | CRON‑style recurrence, stored in state reducer |
+|                   | Cloud sync             | Supabase / Firebase; shows full‑stack chops    |
+| **UI**            | Calendar view          | React Big Calendar for “transaction timeline”  |
+|                   | Category budgets       | Per‑category caps + progress rings             |
+|                   | Drag‑and‑drop reorder  | `react-beautiful-dnd`; UX polish               |
+| **Reporting**     | Monthly PDF export     | `react‑pdf` or serverless function             |
+|                   | Multi‑currency         | Live FX rates API; currency switcher           |
+| **Product**       | PWA offline support    | Workbox; “Install” prompt on mobile            |
+|                   | Push notifications     | Warn when approaching budget limit             |
+| **Accessibility** | Keyboard shortcuts     | `useHotkeys` hook; WCAG focus management       |
+
+_We’ll lock feature scope after the refactor is stable._
 
 ---
 
-## 📈 Road Ahead
+## ✅ Current Status
 
-Phase 1 is feature‑complete.  
-All new work—including Context API state, tests, and deployment—will occur in the React code‑base.
+| Item                          | Progress |
+| ----------------------------- | -------- |
+| React scaffold (CRA)          | ✔        |
+| Dark‑mode toggle (sun / moon) | ✔        |
+| Transactions componentised    | ✔        |
+| Context API state             | ⏳       |
+| Unit‑test harness             | ⏳       |
 
 ---
 
-## Screenshots
+## 🚀 Running Phase 2 Locally
 
-| Light                         | Dark                        |
-| ----------------------------- | --------------------------- |
-| ![Light mode](docs/light.png) | ![Dark mode](docs/dark.png) |
+```bash
+git checkout phase-2      # React branch
+npm install
+npm start                 # http://localhost:3000
+```
