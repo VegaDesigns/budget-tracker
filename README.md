@@ -1,70 +1,62 @@
-# Getting Started with Create React App
+# Budget Tracker — Vanilla JS Archive
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+_Phase 1 (completed); future development continues in React_
 
-## Available Scripts
+This repository began as a pure **HTML / CSS / JavaScript** exercise to track personal income and expenses with real‑time feedback and persistent storage.  
+After delivering a stable MVP, the roadmap pivoted to a full **React rewrite** (now under active development on the `phase-react` branch).  
+This file freezes the original vanilla implementation for reference.
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## ✨ Phase 1 Features
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+| Feature                              | Tech                         |
+| ------------------------------------ | ---------------------------- |
+| Add / delete income & expenses       | DOM + localStorage           |
+| Live balance, income, expense totals | JS array methods             |
+| Doughnut chart                       | Chart.js 3                   |
+| Dark / light theme                   | CSS variables + localStorage |
+| Monthly budget bar                   | Vanilla JS                   |
+| CSV export                           | Blob API                     |
+| Mobile‑first layout                  | Flexbox / media queries      |
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+---
 
-### `npm test`
+## 🧠 Development Journey
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+> **Goal:** deliver a working MVP with clean UI and persistent data.
 
-### `npm run build`
+### Milestones
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+1. **MVP scaffold** – static HTML → dynamic list with `localStorage`.
+2. **Visual feedback** – integrated Chart.js and responsive styling.
+3. **Functional polish** – budget goals, CSV export, inline deletes.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+With the core feature‑set complete and code complexity growing, the project moved to **Phase 2: React rewrite** for better component structure and long‑term scalability.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+---
 
-### `npm run eject`
+## 🛠️ Lessons Learned
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+| Challenge                                     | What I Did                                                         |
+| --------------------------------------------- | ------------------------------------------------------------------ |
+| Expenses stored as positives, breaking totals | Stored expenses as negative numbers and updated math helpers.      |
+| Chart duplicated after each transaction       | Destroyed the existing Chart.js instance before re‑render.         |
+| Dark mode reset on refresh                    | Saved theme preference to localStorage and applied on page load.   |
+| Budget bar didn’t refresh on delete           | Centralized total‑recalculation inside a single `updateUI()` call. |
+| CSV export missing UTF‑8 header               | Used `Blob` with `text/csv;charset=utf-8` for Excel compatibility. |
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+---
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## 📈 Road Ahead
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Phase 1 is feature‑complete.  
+All new work—including Context API state, tests, and deployment—will occur in the React code‑base.
 
-## Learn More
+---
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Screenshots
 
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+| Light                         | Dark                        |
+| ----------------------------- | --------------------------- |
+| ![Light mode](docs/light.png) | ![Dark mode](docs/dark.png) |
