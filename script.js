@@ -1,222 +1,218 @@
-// DOM Elements & Constants
-const balanceEl = document.getElementById('balance');
-const incomeEl = document.getElementById('income');
-const expensesEl = document.getElementById('expenses');
+// ==========================================
+// script.js — Budget Tracker
+// ==========================================
+
+// ----- Element References -----
+// Grab all the DOM nodes we interact with
+const balanceEl       = document.getElementById('balance');
+const incomeEl        = document.getElementById('income');
+const expensesEl      = document.getElementById('expenses');
 const transactionList = document.getElementById('transaction-list');
-const form = document.getElementById('transaction-form');
-const descriptionInput = document.getElementById('description');
-const amountInput = document.getElementById('amount');
-const typeInput = document.getElementById('type');
-const categoryInput = document.getElementById('category');
-const themeToggle = document.getElementById('theme-toggle');
-const filterCategory = document.getElementById('filter-category');
+const form            = document.getElementById('transaction-form');
+const descInput       = document.getElementById('description');
+const amtInput        = document.getElementById('amount');
+const typeInput       = document.getElementById('type');
+const catInput        = document.getElementById('category');
+const formErrorEl     = document.getElementById('form-error');
+const themeToggle     = document.getElementById('theme-toggle');
+const filterCategory  = document.getElementById('filter-category');
+const budgetForm      = document.getElementById('budget-form');
+const budgetInput     = document.getElementById('budget-input');
+const budgetSummary   = document.getElementById('budget-summary');
+const budgetBar       = document.getElementById('budget-bar');
 
-const budgetForm = document.getElementById('budget-form');
-const budgetInput = document.getElementById('budget-input');
-const budgetSummary = document.getElementById('budget-summary');
-const budgetBar = document.getElementById('budget-bar');
+// ----- Application State Initialization -----
+// Load transactions safely from localStorage, or start fresh
+let transactions;
+try {
+  transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+} catch {
+  transactions = [];
+  localStorage.removeItem('transactions');
+}
 
-// Application State
-let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
-let chartInstance = null;
-let monthlyBudget = parseFloat(localStorage.getItem('monthlyBudget')) || null;
+// Chart.js instance and stored monthly budget
+let chartInstance  = null;
+let monthlyBudget  = parseFloat(localStorage.getItem('monthlyBudget')) || null;
 
-// Initialization
+// ----- Initial UI Setup -----
+// Apply saved theme and render UI on page load
 window.addEventListener('DOMContentLoaded', () => {
-  const savedTheme = localStorage.getItem('theme');
-  if (savedTheme === 'dark') {
+  if (localStorage.getItem('theme') === 'dark') {
     document.body.classList.add('dark');
     themeToggle.checked = true;
   }
   updateUI();
 });
 
-// Theme Toggle
+// ----- Theme Toggle Handler -----
+// Persist light/dark mode choice
 themeToggle.addEventListener('change', () => {
-  document.body.classList.toggle('dark');
-  const isDark = document.body.classList.contains('dark');
-  localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  const dark = document.body.classList.toggle('dark');
+  localStorage.setItem('theme', dark ? 'dark' : 'light');
 });
 
-// Utility: Date Formatting
-function formatDate(dateString) {
-  const [year, month, day] = dateString.split("-");
-  return `${parseInt(month)}/${parseInt(day)}/${year.slice(-2)}`;
+// ----- Utility Functions -----
+
+// Convert ISO date ("YYYY-MM-DD") to "M/D/YY"
+function formatDate(iso) {
+  const [y,m,d] = iso.split('-');
+  return `${parseInt(m)}/${parseInt(d)}/${y.slice(-2)}`;
 }
 
-// Budget Goal Functions
-function getTotalExpenses() {
-  return transactions
+// Sum absolute values of negative amounts
+function getTotalExpenses(list) {
+  return list
     .filter(t => t.amount < 0)
     .reduce((sum, t) => sum + Math.abs(t.amount), 0);
 }
 
-function updateBudgetStatus() {
+// ----- Budget Goal Logic -----
+// Update the budget-summary text & progress bar
+function updateBudgetStatus(list = transactions) {
   if (!monthlyBudget || monthlyBudget <= 0) {
     budgetSummary.textContent = "No budget set yet.";
     budgetBar.style.width = '0%';
     return;
   }
-  const spent = getTotalExpenses();
-  const percent = Math.min((spent / monthlyBudget) * 100, 100);
-  budgetSummary.textContent = `$${spent.toFixed(2)} of $${monthlyBudget.toFixed(2)} spent (${percent.toFixed(0)}%)`;
-  budgetBar.style.width = `${percent}%`;
+  const spent = getTotalExpenses(list);
+  const pct   = Math.min((spent / monthlyBudget) * 100, 100);
+  budgetSummary.textContent =
+    `$${spent.toFixed(2)} of $${monthlyBudget.toFixed(2)} spent (${pct.toFixed(0)}%)`;
+  budgetBar.style.width = `${pct}%`;
 }
 
-budgetForm?.addEventListener('submit', (e) => {
+// Handle budget-form submission
+budgetForm?.addEventListener('submit', e => {
   e.preventDefault();
-  const value = parseFloat(budgetInput.value);
-  if (!value || value <= 0) return;
-  monthlyBudget = value;
-  localStorage.setItem('monthlyBudget', value);
-  updateBudgetStatus();
-  budgetInput.value = '';
+  const val = parseFloat(budgetInput.value);
+  if (val > 0) {
+    monthlyBudget = val;
+    localStorage.setItem('monthlyBudget', val);
+    updateBudgetStatus(getFilteredTransactions());
+    budgetInput.value = '';
+  }
 });
 
-// Totals and Chart Update
-function updateTotals(filtered) {
-  const amounts = filtered.map(t => t.amount);
-  const income = amounts.filter(v => v > 0).reduce((a, b) => a + b, 0);
-  const expense = amounts.filter(v => v < 0).reduce((a, b) => a + b, 0);
+// ----- Totals & Chart Rendering -----
+// Compute balance/income/expense & redraw the doughnut chart
+function updateTotals(list) {
+  const amts    = list.map(t => t.amount);
+  const income  = amts.filter(v => v > 0).reduce((a,b) => a + b, 0);
+  const expense = amts.filter(v => v < 0).reduce((a,b) => a + b, 0);
 
-  balanceEl.textContent = (income + expense).toFixed(2);
-  incomeEl.textContent = income.toFixed(2);
+  balanceEl.textContent  = (income + expense).toFixed(2);
+  incomeEl.textContent   = income.toFixed(2);
   expensesEl.textContent = Math.abs(expense).toFixed(2);
-
   renderChart(income, expense);
 }
 
-// Transaction Rendering
-function addTransactionToDOM(transaction) {
-  const sign = transaction.amount < 0 ? '-' : '+';
-  const formattedDate = formatDate(transaction.date);
+// ----- Transaction List Rendering -----
+// Build each <li> safely (no innerHTML)
+function addTransactionToDOM(tx) {
+  const li = document.createElement('li');
+  li.classList.add(tx.amount < 0 ? 'expense' : 'income');
+  li.dataset.id = tx.id;
 
-  const item = document.createElement('li');
-  item.classList.add(transaction.amount < 0 ? 'expense' : 'income');
-  item.setAttribute('data-id', transaction.id);
-  item.innerHTML = `
-    <span class="desc">${transaction.description}</span>
-    <span class="amount">${sign}$${Math.abs(transaction.amount).toFixed(2)}</span>
-    <span class="category-badge">${transaction.category}</span>
-    <span class="date">${formattedDate}</span>
-    <div class="actions">
-      <button onclick="editTransaction(${transaction.id})"><i class="fas fa-edit"></i></button>
-      <button onclick="deleteTransaction(${transaction.id})"><i class="fas fa-trash-alt"></i></button>
-    </div>
-  `;
-  transactionList.appendChild(item);
+  const desc = Object.assign(document.createElement('span'), {
+    className: 'desc', textContent: tx.description
+  });
+  const amt = Object.assign(document.createElement('span'), {
+    className: 'amount',
+    textContent: `${tx.amount < 0 ? '-' : '+'}$${Math.abs(tx.amount).toFixed(2)}`
+  });
+  const cat = Object.assign(document.createElement('span'), {
+    className: 'category-badge', textContent: tx.category
+  });
+  const date = Object.assign(document.createElement('span'), {
+    className: 'date', textContent: formatDate(tx.date)
+  });
+
+  const actions = document.createElement('div');
+  actions.className = 'actions';
+  const delBtn = document.createElement('button');
+  delBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
+  delBtn.addEventListener('click', () => deleteTransaction(tx.id));
+  actions.appendChild(delBtn);
+
+  li.append(desc, amt, cat, date, actions);
+  transactionList.appendChild(li);
 }
 
-// UI Refresh
+// ----- UI Update -----
 function updateUI() {
   transactionList.innerHTML = '';
   const filtered = getFilteredTransactions();
   filtered.forEach(addTransactionToDOM);
   updateTotals(filtered);
-  updateBudgetStatus();
+  updateBudgetStatus(filtered);
 }
 
-// Filtering
+// ----- Filtering -----
 function getFilteredTransactions() {
-  const cat = filterCategory?.value || "all";
-  return transactions.filter(t => cat === "all" || t.category === cat);
+  const cat = filterCategory?.value || 'all';
+  return transactions.filter(t => cat === 'all' || t.category === cat);
+}
+filterCategory?.addEventListener('change', updateUI);
+
+// ----- Form Validation Helpers -----
+function showError(msg) {
+  formErrorEl.textContent    = msg;
+  formErrorEl.style.display  = 'block';
+}
+function clearError() {
+  formErrorEl.style.display  = 'none';
 }
 
-// Add Transaction Logic
-function addTransaction(e) {
+// ----- Add Transaction Handler -----
+form.addEventListener('submit', e => {
   e.preventDefault();
-  const description = descriptionInput.value.trim();
-  const amount = parseFloat(amountInput.value.trim());
-  const type = typeInput.value;
-  const category = categoryInput.value;
+  clearError();
 
-  if (!description || isNaN(amount) || amount <= 0 || !category) return;
+  const descVal = descInput.value.trim();
+  const amtVal  = parseFloat(amtInput.value.trim());
+  const catVal  = catInput.value;
 
-  const signedAmount = type === "expense" ? -Math.abs(amount) : Math.abs(amount);
+  if (!descVal)                    return showError('Description is required.');
+  if (isNaN(amtVal) || amtVal <= 0) return showError('Enter a positive amount.');
+  if (!catVal)                     return showError('Select a category.');
+
+  const signed = typeInput.value === 'expense'
+    ? -Math.abs(amtVal)
+    : Math.abs(amtVal);
+
   const date = new Date().toLocaleDateString('en-CA');
-
-  transactions.push({ id: Date.now(), description, amount: signedAmount, category, date });
+  transactions.push({
+    id: Date.now(),
+    description: descVal,
+    amount: signed,
+    category: catVal,
+    date
+  });
   localStorage.setItem('transactions', JSON.stringify(transactions));
   updateUI();
-
   form.reset();
   typeInput.value = 'income';
-}
+});
 
-// Delete Transaction
+// ----- Delete Transaction -----
 function deleteTransaction(id) {
   transactions = transactions.filter(t => t.id !== id);
   localStorage.setItem('transactions', JSON.stringify(transactions));
   updateUI();
 }
 
-// Inline Edit Transaction
-function editTransaction(id) {
-  const transaction = transactions.find(t => t.id === id);
-  const item = document.querySelector(`[data-id='${id}']`);
-
-  item.innerHTML = `
-    <div class="edit-group">
-      <input type="text" class="edit-desc styled-input" value="${transaction.description}" />
-      <select class="edit-type styled-select">
-        <option value="income" ${transaction.amount > 0 ? 'selected' : ''}>Income</option>
-        <option value="expense" ${transaction.amount < 0 ? 'selected' : ''}>Expense</option>
-      </select>
-      <input type="number" class="edit-amount styled-input" value="${Math.abs(transaction.amount)}" />
-      <select class="edit-category styled-select">
-        <option value="salary" ${transaction.category === "salary" ? "selected" : ""}>Salary</option>
-        <option value="food" ${transaction.category === "food" ? "selected" : ""}>Food</option>
-        <option value="rent" ${transaction.category === "rent" ? "selected" : ""}>Rent</option>
-        <option value="entertainment" ${transaction.category === "entertainment" ? "selected" : ""}>Entertainment</option>
-        <option value="misc" ${transaction.category === "misc" ? "selected" : ""}>Misc</option>
-      </select>
-      <div class="actions">
-        <button onclick="saveTransaction(${id})"><i class="fas fa-check"></i></button>
-        <button onclick="cancelEdit(${id})"><i class="fas fa-times"></i></button>
-      </div>
-    </div>
-  `;
-}
-
-// Save Edited Transaction
-function saveTransaction(id) {
-  const item = document.querySelector(`[data-id='${id}']`);
-  const desc = item.querySelector('.edit-desc').value.trim();
-  const amount = parseFloat(item.querySelector('.edit-amount').value);
-  const type = item.querySelector('.edit-type').value;
-  const category = item.querySelector('.edit-category').value;
-
-  if (!desc || isNaN(amount) || amount <= 0 || !category) return;
-
-  const index = transactions.findIndex(t => t.id === id);
-  transactions[index] = {
-    ...transactions[index],
-    description: desc,
-    amount: type === "expense" ? -Math.abs(amount) : Math.abs(amount),
-    category,
-    date: new Date().toLocaleDateString('en-CA')
-  };
-
-  localStorage.setItem('transactions', JSON.stringify(transactions));
-  updateUI();
-}
-
-// Cancel Edit
-function cancelEdit() {
-  updateUI();
-}
-
-// Render Chart.js Doughnut
-function renderChart(income, expenses) {
+// ----- Chart Rendering -----
+function renderChart(income, expense) {
   const ctx = document.getElementById('budgetChart').getContext('2d');
   if (chartInstance) chartInstance.destroy();
   chartInstance = new Chart(ctx, {
     type: 'doughnut',
     data: {
-      labels: ['Income', 'Expenses'],
+      labels: ['Income','Expenses'],
       datasets: [{
-        data: [income, Math.abs(expenses)],
-        backgroundColor: ['#2ecc71', '#e74c3c'],
+        data: [income, Math.abs(expense)],
+        backgroundColor: ['#2ecc71','#e74c3c'],
         borderWidth: 1
       }]
     },
@@ -224,18 +220,12 @@ function renderChart(income, expenses) {
   });
 }
 
-// Event Listeners
-form.addEventListener('submit', addTransaction);
-filterCategory?.addEventListener('change', updateUI);
-
-// Export to CSV
+// ----- CSV Export Handler -----
 document.getElementById('export-btn')?.addEventListener('click', () => {
   if (!transactions.length) {
-    alert("No transactions to export.");
-    return;
+    return alert("No transactions to export.");
   }
-
-  const headers = ["Description", "Amount", "Type", "Category", "Date"];
+  const headers = ["Description","Amount","Type","Category","Date"];
   const rows = transactions.map(t => [
     `"${t.description}"`,
     t.amount,
@@ -243,17 +233,11 @@ document.getElementById('export-btn')?.addEventListener('click', () => {
     t.category,
     formatDate(t.date)
   ]);
-
-  const csvContent = [headers, ...rows]
-    .map(row => row.join(','))
-    .join('\n');
-
-  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-
+  const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
   const link = document.createElement('a');
-  link.href = url;
-  link.setAttribute('download', 'transactions.csv');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'transactions.csv';
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);

@@ -47,6 +47,13 @@ body {
   transition: background-color 0.3s, box-shadow 0.3s;
 }
 
+/* Error Message */
+.form-error {
+  color: red;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
 /* Header Section */
 .header-bar {
   display: flex;
@@ -103,7 +110,7 @@ body {
   transform: translateX(20px);
 }
 
-/* Button Styles (Export, Budget, Add) */
+/* Button Styles */
 .export-btn,
 .budget-btn,
 form#transaction-form button {
@@ -277,7 +284,7 @@ form#transaction-form select {
   border-left: 4px solid #ef4444;
 }
 
-/* Transaction Date Stamp */
+/* Transaction Details */
 .transactions .date {
   font-size: 0.85rem;
   color: var(--muted);
