@@ -1,109 +1,70 @@
-# Budget Tracker
+# Getting Started with Create React App
 
-A simple budget tracker app built with HTML, CSS, and JavaScript using `localStorage`. It helps users track income and expenses with a clean, responsive UI and real-time visual feedback.
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
----
+## Available Scripts
 
-## ✅ Features
+In the project directory, you can run:
 
-- Add income and expenses  
-- Real-time balance, income, and expense display  
-- Responsive Chart.js graph  
-- Delete transactions with a trash icon  
-- Dark mode toggle (saved in localStorage)  
-- Mobile-first responsive layout  
-- Persistent storage via localStorage  
+### `npm start`
 
----
+Runs the app in the development mode.\
+Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
-## 🧠 Development Journey
+The page will reload when you make changes.\
+You may also see any lint errors in the console.
 
-### Phase 1: MVP Build  
-**Goal:** Get the core add/store/display flow working.
+### `npm test`
 
-**What Went Wrong:**  
-- Expenses were saved as positives  
-- Balance calculation was incorrect  
-- Users had to type negative values manually  
+Launches the test runner in the interactive watch mode.\
+See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-**Fixes:**  
-- Updated storage logic to save expenses as negatives  
-- Corrected the math for balance/income/expenses  
-- Added a dropdown to select Income vs. Expense
+### `npm run build`
 
----
+Builds the app for production to the `build` folder.\
+It correctly bundles React in production mode and optimizes the build for the best performance.
 
-### Phase 2: UI/UX + Visual Feedback  
-**Goal:** Make it feel like a modern, professional product.
+The build is minified and the filenames include the hashes.\
+Your app is ready to be deployed!
 
-**What Went Wrong:**  
-- Charts duplicated on each update  
-- Dark mode didn’t persist  
-- Layout and spacing were inconsistent  
+See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-**Fixes:**  
-- Destroyed existing Chart before re-render  
-- Saved theme in localStorage  
-- Redesigned layout with Flexbox and uniform spacing 
+### `npm run eject`
 
----
+**Note: this is a one-way operation. Once you `eject`, you can't go back!**
 
-### Phase 3: Functional Features
-**Goal:** Add all interactive features and clean up the code.
+If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
-**What Went Wrong:**  
-- Inline edits weren’t styled  
-- Budget bar didn’t always refresh  
-- CSV export was missing  
-- Date formatting was inconsistent  
+Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
 
-**Fixes:**  
-- Styled inline edits with shared input/select classes  
-- Moved `updateBudgetStatus()` into the main UI update flow  
-- Built and wired a CSV export function  
-- Centralized date formatting in `formatDate()`  
+You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
 
----
+## Learn More
 
-## 🏁 Phase 1: MVP Build (Completed)
+You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
-- [x] Static HTML layout  
-- [x] Styled with modern CSS  
-- [x] Add transaction form  
-- [x] Dynamic balance, income, and expense display  
-- [x] `localStorage` integration  
-- [x] Initial mobile responsiveness
+To learn React, check out the [React documentation](https://reactjs.org/).
 
----
+### Code Splitting
 
-### Phase 2: UI/UX Enhancements (Completed)
-- [x] Color-coded tags for income/expenses  
-- [x] Mobile responsive polish  
-- [x] Visual charts using Chart.js  
-- [x] Dark mode with toggle & persistence  
-- [x] Polished form and layout styling  
+This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
 
-### Phase 3: Functional Features (Completed)
-- [x] Delete transactions  
-- [x] Edit existing transactions (inline)  
-- [x] Filter by category  
-- [x] Automatically assign transaction date using local time  
-- [x] Monthly budget goals  
-- [x] Export to CSV
+### Analyzing the Bundle Size
 
-### Phase 4: Framework Upgrade
-- [ ] Rebuild in React or Vue  
-- [ ] State management with Context API or Redux  
-- [ ] Deploy via Netlify or Vercel  
+This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
 
-### Phase 5: Backend Features
-- [ ] Add user authentication  
-- [ ] Store data in MongoDB or Supabase  
-- [ ] Build REST API with Express.js  
+### Making a Progressive Web App
 
----
+This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
 
-## 🌐 Live Projects
+### Advanced Configuration
 
-- 🔗 [Budget Tracker Live](https://vegadesigns.github.io/budget-tracker)  
-- 🔗 [My Developer Portfolio](https://vegadesigns.github.io/portfolio)
+This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+
+### Deployment
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+
+### `npm run build` fails to minify
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
