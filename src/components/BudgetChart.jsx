@@ -8,7 +8,7 @@ export default function BudgetChart({ income, expenses }) {
     { name: "Income", value: income },
     { name: "Expenses", value: expenses },
   ];
-  const COLORS = ["#2ecc71", "#e74c3c"];
+  const COLORS = ["var(--accent)", "var(--muted)"];
 
   return (
     <ResponsiveContainer width="100%" height={200}>

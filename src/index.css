@@ -1,105 +1,172 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap");
+/* src/index.css */
 
+/* --- Design Tokens (light mode) --------------------------------------- */
 :root {
   --bg: #f4f4f4;
   --text: #1a1a1a;
   --card-bg: #ffffff;
   --border: #d1d5db;
-  --muted: #555;
+  --muted: #555555;
+  --accent: #ff7a00;
   --bar-bg: #dddddd;
-  --bar-fill: #444;
-  --button-bg: #333;
-  --button-text: #fff;
-  --button-hover: #111;
+  --bar-fill: var(--accent);
+  --button-bg: var(--accent);
+  --button-text: #ffffff;
+  --button-hover: #e06c00;
 }
 
-/* Dark‑theme overrides */
-body.dark {
-  --bg: #0f0f0f;
-  --text: #f1f1f1;
-  --card-bg: #1a1a1a;
-  --border: #444;
-  --muted: #aaa;
-  --bar-bg: #333;
-  --bar-fill: #888;
-  --button-bg: #333;
-  --button-text: #fff;
-  --button-hover: #000;
+/* — Apply tokens to page & cards — */
+body,
+.app-layout {
+  background-color: var(--bg);
+  color: var(--text);
+  transition: background-color 0.3s, color 0.3s;
+}
+.sidebar,
+.card {
+  background-color: var(--card-bg);
 }
 
-/* --- Base Layout --------------------------------------------------------- */
+/* --- Dark-mode overrides (darker) ------------------------------------- */
+.app-layout.dark {
+  --bg: #000000;
+  --text: #ededed;
+  --card-bg: #080808;
+  --border: #1a1a1a;
+  --muted: #777777;
+  --bar-bg: #1a1a1a;
+  --bar-fill: var(--accent);
+  --button-bg: var(--accent);
+  --button-text: #ffffff;
+  --button-hover: #e06c00;
+}
+
+/* --- Base Layout ------------------------------------------------------- */
 body {
   margin: 0;
   font-family: "Inter", sans-serif;
-  background-color: var(--bg);
+  background: var(--bg);
   color: var(--text);
-  padding: 2rem;
-  transition: background-color 0.3s, color 0.3s;
 }
 
-.container {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 2rem;
-  background-color: var(--card-bg);
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  transition: background-color 0.3s, box-shadow 0.3s;
-}
-
-/* --- Feedback ------------------------------------------------------------ */
-.form-error {
-  color: red;
-  font-size: 0.9rem;
-  margin-bottom: 0.5rem;
-}
-
-/* --- Header -------------------------------------------------------------- */
-.header-bar {
+.app-layout {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
-  flex-wrap: wrap;
+  min-height: 100vh;
 }
 
-.header-bar h1 {
-  font-size: 2rem;
-  margin: 0;
+.main-content {
+  flex: 1;
+  padding: 2rem;
 }
 
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-/* --- Theme Toggle -------------------------------------------------------- */
-
-/* hide native checkbox */
-.toggle-switch input {
+/* --- Sidebar ----------------------------------------------------------- */
+.sidebar {
   display: none;
+  flex-shrink: 0;
+  width: 220px;
+  background: var(--card-bg);
+  border-right: 1px solid var(--border);
+  padding: 1rem;
+  flex-direction: column;
 }
 
-/* pill‑shaped track */
+@media (min-width: 768px) {
+  .sidebar {
+    display: flex;
+  }
+}
+
+.sidebar__avatar img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  display: block;
+  margin: 0 auto 1rem;
+}
+
+.sidebar__nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sidebar__link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem;
+  border-radius: 8px;
+  color: var(--text);
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+.sidebar__link:hover {
+  background: var(--border);
+}
+
+.sidebar__link.active {
+  background: var(--accent);
+  color: var(--button-text);
+}
+
+.sidebar__footer {
+  margin-top: auto;
+}
+
+.sidebar__export-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background-color: var(--button-bg);
+  color: var(--button-text);
+  font-weight: 600;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.sidebar__export-btn:hover {
+  background-color: var(--button-hover);
+}
+
+.sidebar__theme {
+  margin: 1rem 0;
+  display: flex;
+  justify-content: center;
+}
+
+/* --- Theme Toggle ------------------------------------------------------ */
+.toggle-switch input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  width: 0;
+  height: 0;
+}
+
 .toggle-switch .slider {
-  display: inline-block; /* keeps width / height */
+  display: inline-block;
   width: 60px;
   height: 28px;
   background: var(--border);
   border-radius: 28px;
   position: relative;
-  vertical-align: middle; /* aligns next to text/buttons */
+  vertical-align: middle;
   cursor: pointer;
   transition: background 0.3s;
 }
 
-/* dark‑mode track colour */
 body.dark .toggle-switch .slider {
-  background: #444;
+  background: var(--border);
 }
 
-/* white knob (sun‑gradient in light mode) */
 .toggle-switch .slider::before {
   content: "";
   position: absolute;
@@ -113,13 +180,11 @@ body.dark .toggle-switch .slider {
   transition: transform 0.3s, background 0.3s;
 }
 
-/* move knob & recolour when dark mode is active */
 .toggle-switch input:checked + .slider::before {
-  transform: translateX(32px); /* 60 - 24 - 4 */
-  background: #d0d0d0; /* moon‑gray */
+  transform: translateX(32px);
+  background: #d0d0d0;
 }
 
-/* ---------- icons -------------------------------------------------------- */
 .toggle-switch .slider svg {
   position: absolute;
   top: 50%;
@@ -129,35 +194,81 @@ body.dark .toggle-switch .slider {
   transition: opacity 0.3s, color 0.3s;
 }
 
-/* icon positions */
 .slider .sun {
   left: 7px;
-  color: #ffce54;
+  color: var(--accent);
   opacity: 1;
 }
+
 .slider .moon {
   right: 7px;
-  color: #767676;
+  color: var(--muted);
   opacity: 0.35;
 }
 
-/* icon fade when checked */
 .toggle-switch input:checked + .slider .sun {
   opacity: 0.35;
 }
-.toggle-switch input:checked + .slider .moon {
-  opacity: 1;
-}
 
-/* brighten moon icon in dark theme */
 body.dark .slider .moon {
-  color: #ffffff;
+  color: var(--button-text);
 }
 
-/* --- Buttons ------------------------------------------------------------- */
-button,
-.export-btn,
-.budget-btn {
+/* --- Container Grid (Two Columns) -------------------------------------- */
+.container-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.5rem;
+}
+
+@media (max-width: 767px) {
+  .container-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ─── Dashboard Section (vertical stack) ─────────────────────────── */
+.dashboard-section {
+  display: flex;
+  flex-direction: column; /* stack metrics row + chart row */
+  gap: 1.5rem; /* space between row and chart */
+}
+
+/* ─── Metrics Row ─────────────────────────────────────────────────── */
+.dashboard-section .metrics {
+  display: flex;
+  justify-content: space-between; /* left, center, right */
+  gap: 1rem; /* space between cards */
+}
+
+/* Constrain each metric card */
+.dashboard-section .metrics .card {
+  flex: 1; /* grow equally */
+  max-width: 320px; /* prevent over-stretch */
+  padding: 0.75rem 1rem; /* consistent padding */
+}
+
+/* ─── Metric Amount Styling ───────────────────────────────────────── */
+.balance-amount,
+.income-amount,
+.expenses-amount {
+  font-size: 2.5rem; /* increase from 1rem/1.5rem */
+  font-weight: 700; /* keep them bold */
+  margin: 0.25rem 0; /* tighten the vertical spacing */
+  color: var(--text); /* ensure they use your theme’s primary text color */
+}
+
+.dashboard-section .chart-section .card {
+  min-height: 280px; /* ensures the card is at least this tall */
+}
+
+.dashboard-section .chart-section h3 {
+  margin-bottom: 0.5rem; /* default was 0.75rem in your section headings */
+  font-size: 1.1rem; /* slightly smaller than metric card titles */
+}
+
+/* --- Buttons ----------------------------------------------------------- */
+button {
   background-color: var(--button-bg);
   color: var(--button-text);
   font-weight: 600;
@@ -168,117 +279,27 @@ button,
   transition: background-color 0.2s ease;
 }
 
-button:hover,
-.export-btn:hover,
-.budget-btn:hover {
+button:hover {
   background-color: var(--button-hover);
 }
 
-/* --- Summary Cards ------------------------------------------------------- */
-.summary {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  flex-wrap: wrap;
-  margin-bottom: 1.5rem;
-}
-
-.summary div {
-  flex: 1;
+/* --- Card Base --------------------------------------------------------- */
+.card {
   background: var(--card-bg);
   border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 1rem;
-  text-align: center;
-  font-weight: bold;
-}
-
-/* --- Chart Container ----------------------------------------------------- */
-.chart-container {
-  background: var(--card-bg);
-  padding: 1rem;
-  border-radius: 8px;
-  margin-bottom: 2rem;
-  border: 1px solid var(--border);
-}
-
-/* --- Filters ------------------------------------------------------------- */
-.filters {
-  margin-bottom: 1rem;
-}
-
-.filters label {
-  margin-right: 0.5rem;
-  font-weight: 600;
-}
-
-.filters select {
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background-color: var(--card-bg);
-  color: var(--text);
-  font-size: 1rem;
-}
-
-/* --- Budget Goal Card ---------------------------------------------------- */
-.budget-goal-card {
-  background: var(--card-bg);
-  border: 1px solid var(--border);
+  border-radius: 10px;
   padding: 1.5rem;
-  border-radius: 10px;
-  margin-bottom: 2rem;
 }
 
-#budget-form {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1rem;
-  flex-wrap: wrap;
-}
-
-#budget-form input {
-  flex: 1;
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  font-size: 1rem;
-  background-color: var(--card-bg);
-  color: var(--text);
-}
-
-.budget-status {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-#budget-summary {
+/* Section Headings */
+.dashboard-section h3,
+.transactions-section h3 {
+  margin: 0 0 0.75rem;
   font-weight: 600;
-  color: var(--muted);
 }
 
-.budget-progress {
-  height: 20px;
-  width: 100%;
-  background-color: var(--bar-bg);
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-.budget-bar-fill {
-  height: 100%;
-  background-color: var(--bar-fill);
-  transition: width 0.3s ease;
-}
-
-/* --- Transaction Form ---------------------------------------------------- */
+/* --- Transaction Form -------------------------------------------------- */
 form#transaction-form {
-  background: var(--card-bg);
-  border: 1px solid var(--border);
-  padding: 1.5rem;
-  border-radius: 10px;
-  margin-bottom: 2rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -290,11 +311,11 @@ form#transaction-form select {
   font-size: 1rem;
   border: 1px solid var(--border);
   border-radius: 8px;
-  background-color: var(--card-bg);
+  background: var(--card-bg);
   color: var(--text);
 }
 
-/* --- Transactions List --------------------------------------------------- */
+/* --- Transactions List ------------------------------------------------- */
 .transactions {
   list-style: none;
   padding: 0;
@@ -307,8 +328,8 @@ form#transaction-form select {
   align-items: center;
   padding: 1rem;
   margin-bottom: 1rem;
+  background: var(--card-bg);
   border-radius: 10px;
-  background-color: var(--card-bg);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
@@ -319,45 +340,49 @@ form#transaction-form select {
 }
 
 .transactions li.income {
-  background-color: rgba(34, 197, 94, 0.08);
+  background: rgba(34, 197, 94, 0.08);
   border-left: 4px solid #22c55e;
 }
 
 .transactions li.expense {
-  background-color: rgba(239, 68, 68, 0.08);
+  background: rgba(239, 68, 68, 0.08);
   border-left: 4px solid #ef4444;
 }
 
-/* Transaction details */
+.transactions .desc {
+  flex: 2;
+  font-weight: 600;
+}
+
+.transactions .amount {
+  flex: 1;
+  text-align: right;
+}
+
+.transactions .category-badge {
+  margin-left: 1rem;
+  padding: 0.3rem 0.75rem;
+  background: var(--bar-bg);
+  border-radius: 20px;
+  font-size: 0.85rem;
+  color: var(--text);
+  white-space: nowrap;
+}
+
 .transactions .date {
   font-size: 0.85rem;
   color: var(--muted);
   margin-left: 1rem;
   white-space: nowrap;
 }
-.transactions .desc {
-  flex: 2;
-  font-weight: 600;
-}
-.transactions .amount {
-  flex: 1;
-  text-align: right;
-}
-.transactions .category-badge {
-  margin-left: 1rem;
-  padding: 0.3rem 0.75rem;
-  background-color: var(--bar-bg);
-  border-radius: 20px;
-  font-size: 0.85rem;
-  color: var(--text);
-  white-space: nowrap;
-}
+
 .transactions .actions {
   display: flex;
   gap: 0.5rem;
   margin-left: 1rem;
 }
-.actions button {
+
+.transactions .actions button {
   background: none;
   border: none;
   cursor: pointer;
@@ -365,21 +390,7 @@ form#transaction-form select {
   color: var(--muted);
   transition: color 0.2s ease;
 }
-.actions button:hover {
-  color: var(--text);
-}
 
-/* --- Responsive ---------------------------------------------------------- */
-@media (max-width: 768px) {
-  .header-bar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-  }
-  .summary {
-    flex-direction: column;
-  }
-  .container {
-    padding: 1rem;
-  }
+.transactions .actions button:hover {
+  color: var(--text);
 }

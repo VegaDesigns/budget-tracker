@@ -1,113 +1,119 @@
 <!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Budget Tracker</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-</head>
-<body>
-  <div class="container">
-
-    <!-- Header Section -->
-    <div class="header-bar">
-      <h1>Budget Tracker</h1>
-      <div class="header-actions">
-        <button id="export-btn" class="export-btn">Export CSV</button>
-        <label class="toggle-switch">
-          <input type="checkbox" id="theme-toggle" />
-          <span class="slider"></span>
-        </label>
-      </div>
-    </div>
-
-    <!-- Summary Section -->
-    <div class="summary">
-      <div>
-        <strong>Balance:</strong>
-        $<span id="balance">0.00</span>
-      </div>
-      <div>
-        <strong>Income:</strong>
-        $<span id="income">0.00</span>
-      </div>
-      <div>
-        <strong>Expenses:</strong>
-        $<span id="expenses">0.00</span>
-      </div>
-    </div>
-
-    <!-- Chart Visualization -->
-    <div class="chart-container">
-      <canvas id="budgetChart"></canvas>
-    </div>
-
-    <!-- Filter Controls -->
-    <div class="filters">
-      <label for="filter-category">Filter by Category</label>
-      <select id="filter-category">
-        <option value="all">All</option>
-        <option value="salary">Salary</option>
-        <option value="food">Food</option>
-        <option value="rent">Rent</option>
-        <option value="entertainment">Entertainment</option>
-        <option value="misc">Misc</option>
-      </select>
-    </div>
-
-    <!-- Budget Goal Section -->
-    <div class="card budget-goal-card">
-      <h2>Monthly Budget Goal</h2>
-      <form id="budget-form">
-        <input type="number" id="budget-input" placeholder="Set your monthly budget..." min="1" required />
-        <button type="submit" class="budget-btn">Set Budget</button>
-      </form>
-      <div class="budget-status">
-        <p id="budget-summary">No budget set yet.</p>
-        <div class="budget-progress">
-          <div id="budget-bar" class="budget-bar-fill" style="width: 0%;"></div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Budget Tracker</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <!-- Header Section -->
+      <div class="header-bar">
+        <h1>Budget Tracker</h1>
+        <div class="header-actions">
+          <button id="export-btn" class="export-btn">Export CSV</button>
+          <label class="toggle-switch">
+            <input type="checkbox" id="theme-toggle" />
+            <span class="slider"></span>
+          </label>
         </div>
       </div>
+
+      <!-- Summary Section -->
+      <div class="summary">
+        <div>
+          <strong>Balance:</strong>
+          $<span id="balance">0.00</span>
+        </div>
+        <div>
+          <strong>Income:</strong>
+          $<span id="income">0.00</span>
+        </div>
+        <div>
+          <strong>Expenses:</strong>
+          $<span id="expenses">0.00</span>
+        </div>
+      </div>
+
+      <!-- Chart Visualization -->
+      <div class="chart-container">
+        <canvas id="budgetChart"></canvas>
+      </div>
+
+      <!-- Budget Goal Section -->
+      <div class="card budget-goal-card">
+        <h2>Monthly Budget Goal</h2>
+        <form id="budget-form">
+          <input
+            type="number"
+            id="budget-input"
+            placeholder="Set your monthly budget..."
+            min="1"
+            required
+          />
+          <button type="submit" class="budget-btn">Set Budget</button>
+        </form>
+        <div class="budget-status">
+          <p id="budget-summary">No budget set yet.</p>
+          <div class="budget-progress">
+            <div
+              id="budget-bar"
+              class="budget-bar-fill"
+              style="width: 0%"
+            ></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Transaction Entry Form -->
+      <form id="transaction-form">
+        <!-- Inline error placeholder -->
+        <p id="form-error" class="form-error" style="display: none"></p>
+
+        <label for="description">Description</label>
+        <input
+          type="text"
+          id="description"
+          placeholder="e.g., Rent, Groceries"
+          required
+        />
+
+        <label for="type">Transaction Type</label>
+        <select id="type">
+          <option value="income">Income</option>
+          <option value="expense">Expense</option>
+        </select>
+
+        <label for="amount">Amount</label>
+        <input type="number" id="amount" placeholder="e.g., 500" required />
+
+        <label for="category">Category</label>
+        <select id="category" required>
+          <option value="salary">Salary</option>
+          <option value="food">Food</option>
+          <option value="rent">Rent</option>
+          <option value="entertainment">Entertainment</option>
+          <option value="misc">Misc</option>
+        </select>
+
+        <button type="submit">Add Transaction</button>
+      </form>
+
+      <!-- Transactions List -->
+      <ul id="transaction-list" class="transactions"></ul>
     </div>
 
-    <!-- Transaction Entry Form -->
-    <form id="transaction-form">
-      <!-- Inline error placeholder -->
-      <p id="form-error" class="form-error" style="display:none;"></p>
-
-      <label for="description">Description</label>
-      <input type="text" id="description" placeholder="e.g., Rent, Groceries" required />
-
-      <label for="type">Transaction Type</label>
-      <select id="type">
-        <option value="income">Income</option>
-        <option value="expense">Expense</option>
-      </select>
-
-      <label for="amount">Amount</label>
-      <input type="number" id="amount" placeholder="e.g., 500" required />
-
-      <label for="category">Category</label>
-      <select id="category" required>
-        <option value="salary">Salary</option>
-        <option value="food">Food</option>
-        <option value="rent">Rent</option>
-        <option value="entertainment">Entertainment</option>
-        <option value="misc">Misc</option>
-      </select>
-
-      <button type="submit">Add Transaction</button>
-    </form>
-
-    <!-- Transactions List -->
-    <ul id="transaction-list" class="transactions"></ul>
-
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="script.js"></script>
-</body>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+  </body>
 </html>

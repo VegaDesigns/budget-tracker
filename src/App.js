@@ -1,48 +1,154 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { useBudget } from "./context/BudgetContext";
-import { FaSun, FaMoon } from "react-icons/fa";
-import BudgetChart from "./components/BudgetChart";
+
+import Sidebar from "./components/Sidebar";
+import BalanceTrend from "./components/BalanceTrend";
 import TransactionForm from "./components/TransactionForm";
 import TransactionItem from "./components/TransactionItem";
 
-export default function App() {
-  // pull global state & dispatch from context
-  const { state, dispatch } = useBudget();
-  const { transactions, monthlyBudget, theme } = state;
+// — Demo dataset for the 30-day trend chart
+const DEMO_TRANSACTIONS = [
+  {
+    id: 1,
+    description: "Salary",
+    amount: 3000,
+    category: "salary",
+    date: new Date("2025-04-01").getTime(),
+  },
+  {
+    id: 2,
+    description: "Rent",
+    amount: -1200,
+    category: "rent",
+    date: new Date("2025-04-05").getTime(),
+  },
+  {
+    id: 3,
+    description: "Freelance",
+    amount: 800,
+    category: "salary",
+    date: new Date("2025-04-10").getTime(),
+  },
+  {
+    id: 4,
+    description: "Groceries",
+    amount: -200,
+    category: "food",
+    date: new Date("2025-04-12").getTime(),
+  },
+  {
+    id: 5,
+    description: "Utilities",
+    amount: -150,
+    category: "bills",
+    date: new Date("2025-04-18").getTime(),
+  },
+  {
+    id: 6,
+    description: "Transport",
+    amount: -100,
+    category: "misc",
+    date: new Date("2025-04-20").getTime(),
+  },
+  {
+    id: 7,
+    description: "Dining Out",
+    amount: -80,
+    category: "food",
+    date: new Date("2025-04-22").getTime(),
+  },
+  {
+    id: 8,
+    description: "Bonus",
+    amount: 500,
+    category: "salary",
+    date: new Date("2025-04-25").getTime(),
+  },
+];
 
-  // local UI filter
+export default function App() {
+  // — Context API state & dispatch
+  const {
+    state: { transactions, theme },
+    dispatch,
+  } = useBudget();
+
+  // — Local UI state
   const [filter, setFilter] = useState("all");
 
-  /* ---------- derived totals ---------- */
-  const income = transactions
-    .filter((t) => t.amount > 0)
-    .reduce((sum, t) => sum + t.amount, 0);
+  // — Derived totals from live transactions
+  const totalIncome = useMemo(
+    () =>
+      transactions
+        .filter((t) => t.amount > 0)
+        .reduce((s, t) => s + t.amount, 0),
+    [transactions]
+  );
+  const totalExpense = useMemo(
+    () =>
+      transactions
+        .filter((t) => t.amount < 0)
+        .reduce((s, t) => s + Math.abs(t.amount), 0),
+    [transactions]
+  );
+  const filteredTransactions = useMemo(
+    () => transactions.filter((t) => filter === "all" || t.category === filter),
+    [transactions, filter]
+  );
 
-  const expense = transactions
-    .filter((t) => t.amount < 0)
-    .reduce((sum, t) => sum + Math.abs(t.amount), 0);
+  // — Compute 30-day running balances (demo data)
+  const dailyBalances = useMemo(() => {
+    const today = new Date();
+    const start = new Date();
+    start.setDate(today.getDate() - 29);
 
-  const filteredTx =
-    filter === "all"
-      ? transactions
-      : transactions.filter((t) => t.category === filter);
+    const dates = [];
+    for (let d = new Date(start); d <= today; d.setDate(d.getDate() + 1)) {
+      dates.push(new Date(d));
+    }
 
-  /* ---------- handlers (dispatch wrappers) ---------- */
-  const addTx = (tx) => dispatch({ type: "ADD_TX", payload: tx });
-  const delTx = (id) => dispatch({ type: "DELETE_TX", payload: id });
-  const setBudget = (n) => dispatch({ type: "SET_BUDGET", payload: n });
-  const toggleTh = () => dispatch({ type: "TOGGLE_THEME" });
+    const sorted = [...DEMO_TRANSACTIONS].sort((a, b) => a.date - b.date);
+    let running = 0;
+    const result = dates.map((d) => {
+      const cutoff = d.setHours(23, 59, 59, 999);
+      sorted.forEach((tx) => {
+        if (tx.date <= cutoff && !tx._counted) {
+          running += tx.amount;
+          tx._counted = true;
+        }
+      });
+      return {
+        date: d.toLocaleDateString(undefined, {
+          month: "numeric",
+          day: "numeric",
+        }),
+        balance: running,
+      };
+    });
+    sorted.forEach((tx) => delete tx._counted);
+    return result;
+  }, []);
 
-  /* ---------- CSV export (uses transactions) ---------- */
-  const exportCSV = () => {
-    if (!transactions.length) return alert("No transactions to export.");
+  // — Handlers to dispatch actions
+  const handleAddTransaction = (tx) =>
+    dispatch({ type: "ADD_TX", payload: tx });
+  const handleDeleteTransaction = (id) =>
+    dispatch({ type: "DELETE_TX", payload: id });
+  const handleToggleTheme = () => dispatch({ type: "TOGGLE_THEME" });
+
+  // — Export CSV of live transactions
+  const handleExportCSV = () => {
+    if (!transactions.length) {
+      alert("No transactions to export.");
+      return;
+    }
     const headers = ["Description", "Amount", "Type", "Category", "Date"];
     const rows = transactions.map((t) => [
       `"${t.description}"`,
       t.amount,
       t.amount < 0 ? "Expense" : "Income",
       t.category,
-      t.date,
+      new Date(t.date).toLocaleString(),
     ]);
     const csv = [headers, ...rows].map((r) => r.join(",")).join("\n");
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
@@ -52,117 +158,72 @@ export default function App() {
     link.click();
   };
 
-  /* ---------- render ---------- */
   return (
-    <div className="container">
-      {/* header */}
-      <div className="header-bar">
-        <h1>Budget Tracker</h1>
-        <div className="header-actions">
-          <button onClick={exportCSV}>Export CSV</button>
+    <div className={`app-layout ${theme}`}>
+      <Sidebar
+        onExport={handleExportCSV}
+        onToggleTheme={handleToggleTheme}
+        theme={theme}
+      />
 
-          <label className="toggle-switch" title="Toggle dark mode">
-            <input
-              type="checkbox"
-              checked={theme === "dark"}
-              onChange={toggleTh}
-            />
-            <span className="slider">
-              <FaSun className="icon sun" />
-              <FaMoon className="icon moon" />
-            </span>
-          </label>
-        </div>
-      </div>
+      <main className="main-content">
+        {/* —— Simple page header —— */}
+        <header className="page-header">
+          <h1>Budget Tracker</h1>
+        </header>
 
-      {/* summary cards */}
-      <div className="summary">
-        <div>
-          <strong>Balance:</strong> ${(income - expense).toFixed(2)}
-        </div>
-        <div>
-          <strong>Income:</strong> ${income.toFixed(2)}
-        </div>
-        <div>
-          <strong>Expenses:</strong> ${expense.toFixed(2)}
-        </div>
-      </div>
-
-      {/* chart */}
-      <div className="chart-container">
-        <BudgetChart income={income} expenses={expense} />
-      </div>
-
-      {/* category filter */}
-      <div className="filters">
-        <label htmlFor="filter">Filter</label>
-        <select
-          id="filter"
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-        >
-          <option value="all">All</option>
-          <option value="salary">Salary</option>
-          <option value="food">Food</option>
-          <option value="rent">Rent</option>
-          <option value="entertainment">Entertainment</option>
-          <option value="misc">Misc</option>
-        </select>
-      </div>
-
-      {/* monthly budget card */}
-      <div className="card budget-goal-card">
-        <h2>Monthly Budget</h2>
-        <form
-          id="budget-form"
-          onSubmit={(e) => {
-            e.preventDefault();
-            const val = parseFloat(e.target.budget.value);
-            if (val > 0) setBudget(val);
-            e.target.reset();
-          }}
-        >
-          <input
-            name="budget"
-            type="number"
-            min="1"
-            placeholder="Set budget…"
-            required
-          />
-          <button className="budget-btn">Set Budget</button>
-        </form>
-
-        <div className="budget-status">
-          {monthlyBudget !== null ? (
-            <>
-              <p id="budget-summary">
-                ${expense.toFixed(2)} of ${monthlyBudget.toFixed(2)} spent (
-                {Math.min((expense / monthlyBudget) * 100, 100).toFixed(0)}%)
-              </p>
-              <div className="budget-progress">
-                <div
-                  className="budget-bar-fill"
-                  style={{
-                    width: `${Math.min((expense / monthlyBudget) * 100, 100)}%`,
-                  }}
-                />
+        {/* Two-column dashboard & list */}
+        <div className="container-grid">
+          {/* Dashboard section */}
+          <section className="dashboard-section">
+            {/* Row of 3 metric cards */}
+            <div className="metrics">
+              <div className="card">
+                <h3>Balance</h3>
+                <p className="balance-amount">
+                  ${(totalIncome - totalExpense).toFixed(2)}
+                </p>
               </div>
-            </>
-          ) : (
-            <p id="budget-summary">No budget set yet.</p>
-          )}
+              <div className="card">
+                <h3>Income</h3>
+                <p className="income-amount">${totalIncome.toFixed(2)}</p>
+              </div>
+              <div className="card">
+                <h3>Expenses</h3>
+                <p className="expenses-amount">${totalExpense.toFixed(2)}</p>
+              </div>
+            </div>
+
+            {/* ─── 30-Day Balance Chart ────────────────────────────────── */}
+            <div className="chart-section">
+              <div className="card">
+                <h3>30-Day Balance Trend</h3>
+                <BalanceTrend data={dailyBalances} height={250} />
+              </div>
+            </div>
+          </section>
+
+          {/* Transactions section */}
+          <section className="transactions-section">
+            <div className="card form-card">
+              <h3>Add Transaction</h3>
+              <TransactionForm onAdd={handleAddTransaction} />
+            </div>
+            <div className="card list-card">
+              <h3>Transactions</h3>
+              <ul className="transactions">
+                {filteredTransactions.map((tx) => (
+                  <TransactionItem
+                    key={tx.id}
+                    tx={tx}
+                    onDelete={handleDeleteTransaction}
+                  />
+                ))}
+              </ul>
+            </div>
+          </section>
         </div>
-      </div>
-
-      {/* transaction form */}
-      <TransactionForm onAdd={addTx} />
-
-      {/* transaction list */}
-      <ul className="transactions">
-        {filteredTx.map((tx) => (
-          <TransactionItem key={tx.id} tx={tx} onDelete={delTx} />
-        ))}
-      </ul>
+      </main>
     </div>
   );
 }
