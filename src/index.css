@@ -1,6 +1,6 @@
 /* src/index.css */
 
-/* --- Design Tokens (light mode) --------------------------------------- */
+/* --- Design Tokens (light mode & spacing) ---------------------------- */
 :root {
   --bg: #f4f4f4;
   --text: #1a1a1a;
@@ -13,21 +13,20 @@
   --button-bg: var(--accent);
   --button-text: #ffffff;
   --button-hover: #e06c00;
+  --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.25);
+  --card-shadow-hover: 0 8px 12px rgba(0, 0, 0, 0.35);
+  /* Spacing scale */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  /* Sidebar widths */
+  --sidebar-sm: 220px;
+  --sidebar-lg: 250px;
 }
 
-/* — Apply tokens to page & cards — */
-body,
-.app-layout {
-  background-color: var(--bg);
-  color: var(--text);
-  transition: background-color 0.3s, color 0.3s;
-}
-.sidebar,
-.card {
-  background-color: var(--card-bg);
-}
-
-/* --- Dark-mode overrides (darker) ------------------------------------- */
+/* Dark mode overrides */
 .app-layout.dark {
   --bg: #000000;
   --text: #ededed;
@@ -39,14 +38,23 @@ body,
   --button-bg: var(--accent);
   --button-text: #ffffff;
   --button-hover: #e06c00;
+  --card-shadow: 0 4px 6px rgba(255, 255, 255, 0.1);
+  --card-shadow-hover: 0 8px 12px rgba(255, 255, 255, 0.15);
 }
 
-/* --- Base Layout ------------------------------------------------------- */
-body {
+/* Global resets & layout */
+* {
+  box-sizing: border-box;
   margin: 0;
-  font-family: "Inter", sans-serif;
-  background: var(--bg);
+  padding: 0;
+}
+
+body,
+.app-layout {
+  background-color: var(--bg);
   color: var(--text);
+  font-family: "Inter", sans-serif;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 .app-layout {
@@ -54,260 +62,322 @@ body {
   min-height: 100vh;
 }
 
-.main-content {
-  flex: 1;
-  padding: 2rem;
-}
-
-/* --- Sidebar ----------------------------------------------------------- */
+/* Sidebar */
 .sidebar {
-  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
   flex-shrink: 0;
-  width: 220px;
+  width: var(--sidebar-sm);
   background: var(--card-bg);
   border-right: 1px solid var(--border);
-  padding: 1rem;
-  flex-direction: column;
+  padding: var(--space-lg);
+  overflow-y: auto;
+  transform: translateX(-100%);
+  visibility: hidden;
+  transition: transform 0.3s ease, visibility 0.3s ease;
+  z-index: 100;
 }
 
-@media (min-width: 768px) {
-  .sidebar {
-    display: flex;
-  }
+/* Sidebar Avatar */
+.sidebar__avatar {
+  margin-bottom: var(--space-lg);
+  text-align: center;
 }
-
 .sidebar__avatar img {
-  width: 48px;
-  height: 48px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
-  border: 2px solid var(--accent);
-  display: block;
-  margin: 0 auto 1rem;
+  object-fit: cover;
 }
 
-.sidebar__nav {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+/* Sidebar Nav */
+.sidebar__nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
-
+.sidebar__nav li {
+  margin-bottom: var(--space-md);
+}
 .sidebar__link {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.5rem;
-  border-radius: 8px;
+  display: block;
   color: var(--text);
   text-decoration: none;
-  transition: background 0.2s;
+  font-weight: 500;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
 }
-
 .sidebar__link:hover {
-  background: var(--border);
+  background-color: var(--bar-bg);
 }
-
 .sidebar__link.active {
-  background: var(--accent);
+  background-color: var(--accent);
   color: var(--button-text);
 }
 
+/* Sidebar Theme Toggle */
+.sidebar__theme {
+  margin: var(--space-lg) 0;
+  text-align: center;
+}
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 24px;
+}
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--bar-bg);
+  border-radius: 34px;
+  transition: 0.4s;
+}
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: var(--button-text);
+  transition: 0.4s;
+  border-radius: 50%;
+}
+.toggle-switch input:checked + .slider {
+  background-color: var(--accent);
+}
+.toggle-switch input:checked + .slider:before {
+  transform: translateX(26px);
+}
+.slider .sun,
+.slider .moon {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 12px;
+  height: 12px;
+  fill: var(--button-text);
+}
+.slider .sun {
+  left: 6px;
+}
+.slider .moon {
+  right: 6px;
+}
+
+/* Sidebar Export Button */
 .sidebar__footer {
+  text-align: center;
   margin-top: auto;
 }
-
 .sidebar__export-btn {
-  width: 100%;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
+  gap: var(--space-xs);
   background-color: var(--button-bg);
   color: var(--button-text);
-  font-weight: 600;
-  padding: 0.75rem;
+  padding: var(--space-sm) var(--space-md);
   border: none;
-  border-radius: 8px;
+  border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
-
 .sidebar__export-btn:hover {
   background-color: var(--button-hover);
 }
 
-.sidebar__theme {
-  margin: 1rem 0;
-  display: flex;
-  justify-content: center;
-}
-
-/* --- Theme Toggle ------------------------------------------------------ */
-.toggle-switch input {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-  width: 0;
-  height: 0;
-}
-
-.toggle-switch .slider {
-  display: inline-block;
-  width: 60px;
-  height: 28px;
-  background: var(--border);
-  border-radius: 28px;
-  position: relative;
-  vertical-align: middle;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-
-body.dark .toggle-switch .slider {
-  background: var(--border);
-}
-
-.toggle-switch .slider::before {
-  content: "";
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: linear-gradient(145deg, #fdb813, #f6a700);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
-  transition: transform 0.3s, background 0.3s;
-}
-
-.toggle-switch input:checked + .slider::before {
-  transform: translateX(32px);
-  background: #d0d0d0;
-}
-
-.toggle-switch .slider svg {
-  position: absolute;
-  top: 50%;
-  font-size: 14px;
-  transform: translateY(-50%);
-  pointer-events: none;
-  transition: opacity 0.3s, color 0.3s;
-}
-
-.slider .sun {
-  left: 7px;
-  color: var(--accent);
-  opacity: 1;
-}
-
-.slider .moon {
-  right: 7px;
-  color: var(--muted);
-  opacity: 0.35;
-}
-
-.toggle-switch input:checked + .slider .sun {
-  opacity: 0.35;
-}
-
-body.dark .slider .moon {
+/* Mobile toggle button */
+.sidebar-toggle {
+  display: none;
+  position: fixed;
+  top: var(--space-md);
+  left: var(--space-md);
+  z-index: 110;
+  background: var(--button-bg);
   color: var(--button-text);
+  border: none;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: 4px;
+  cursor: pointer;
 }
 
-/* --- Container Grid (Two Columns) -------------------------------------- */
+/* Sidebar show/hide states */
+@media (max-width: 767px) {
+  .sidebar-toggle {
+    display: block;
+  }
+  .sidebar.sidebar--open {
+    transform: translateX(0);
+    visibility: visible;
+  }
+}
+@media (min-width: 768px) {
+  .sidebar {
+    transform: translateX(0);
+    visibility: visible;
+    width: var(--sidebar-sm);
+  }
+}
+@media (min-width: 1024px) {
+  .sidebar {
+    width: var(--sidebar-lg);
+  }
+}
+
+/* Main content */
+.main-content {
+  margin-left: 0;
+  padding: var(--space-xl);
+  width: 100%;
+  transition: margin-left 0.3s ease;
+}
+@media (min-width: 768px) {
+  .main-content {
+    margin-left: var(--sidebar-sm);
+    width: calc(100% - var(--sidebar-sm));
+  }
+}
+@media (min-width: 1024px) {
+  .main-content {
+    margin-left: var(--sidebar-lg);
+    width: calc(100% - var(--sidebar-lg));
+  }
+}
+
+/* Container grid */
 .container-grid {
   display: grid;
   grid-template-columns: 2fr 1fr;
-  gap: 1.5rem;
+  gap: var(--space-xl);
+  align-items: flex-start;
 }
-
-@media (max-width: 767px) {
+@media (max-width: 1024px) {
+  .container-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (max-width: 768px) {
   .container-grid {
     grid-template-columns: 1fr;
   }
 }
 
-/* ─── Dashboard Section (vertical stack) ─────────────────────────── */
-.dashboard-section {
-  display: flex;
-  flex-direction: column; /* stack metrics row + chart row */
-  gap: 1.5rem; /* space between row and chart */
+/* Page header */
+.page-header h1 {
+  font-size: 1.75rem;
+  margin-bottom: var(--space-lg);
 }
 
-/* ─── Metrics Row ─────────────────────────────────────────────────── */
+/* Metrics row */
 .dashboard-section .metrics {
   display: flex;
-  justify-content: space-between; /* left, center, right */
-  gap: 1rem; /* space between cards */
+  justify-content: space-between;
+  align-items: stretch;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+@media (max-width: 768px) {
+  .dashboard-section .metrics {
+    flex-direction: column;
+    gap: var(--space-md);
+  }
 }
 
-/* Constrain each metric card */
+/* Metric cards */
 .dashboard-section .metrics .card {
-  flex: 1; /* grow equally */
-  max-width: 320px; /* prevent over-stretch */
-  padding: 0.75rem 1rem; /* consistent padding */
+  flex: 1;
+  background-color: var(--card-bg);
+  box-shadow: var(--card-shadow);
+  transition: box-shadow 0.2s ease;
+  padding: var(--space-lg);
 }
-
-/* ─── Metric Amount Styling ───────────────────────────────────────── */
+.dashboard-section .metrics .card:hover {
+  box-shadow: var(--card-shadow-hover);
+}
+.dashboard-section .metrics .card h3 {
+  color: var(--muted);
+  font-size: 1rem;
+  margin-bottom: var(--space-xs);
+}
 .balance-amount,
 .income-amount,
 .expenses-amount {
-  font-size: 2.5rem; /* increase from 1rem/1.5rem */
-  font-weight: 700; /* keep them bold */
-  margin: 0.25rem 0; /* tighten the vertical spacing */
-  color: var(--text); /* ensure they use your theme’s primary text color */
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: var(--space-xs) 0 0;
 }
 
+/* Chart section */
 .dashboard-section .chart-section .card {
-  min-height: 280px; /* ensures the card is at least this tall */
+  background-color: var(--card-bg);
+  box-shadow: var(--card-shadow);
+  padding: var(--space-lg);
+  min-height: 300px;
 }
-
 .dashboard-section .chart-section h3 {
-  margin-bottom: 0.5rem; /* default was 0.75rem in your section headings */
-  font-size: 1.1rem; /* slightly smaller than metric card titles */
+  margin-bottom: var(--space-md);
+  font-size: 1.25rem;
 }
 
-/* --- Buttons ----------------------------------------------------------- */
+/* Cards */
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: var(--space-lg);
+  box-shadow: var(--card-shadow);
+}
+
+.transactions-section h3,
+.dashboard-section h3 {
+  margin-bottom: var(--space-md);
+  font-weight: 600;
+}
+
+.transactions-section .form-card,
+.transactions-section .list-card {
+  margin-bottom: var(--space-xl);
+}
+
+/* Buttons */
 button {
   background-color: var(--button-bg);
   color: var(--button-text);
   font-weight: 600;
-  padding: 0.6rem 1.2rem;
+  padding: var(--space-sm) var(--space-md);
   border: none;
   border-radius: 8px;
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
-
 button:hover {
   background-color: var(--button-hover);
 }
 
-/* --- Card Base --------------------------------------------------------- */
-.card {
-  background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 1.5rem;
-}
-
-/* Section Headings */
-.dashboard-section h3,
-.transactions-section h3 {
-  margin: 0 0 0.75rem;
-  font-weight: 600;
-}
-
-/* --- Transaction Form -------------------------------------------------- */
+/* Transaction form */
 form#transaction-form {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: var(--space-md);
 }
-
 form#transaction-form input,
 form#transaction-form select {
-  padding: 0.75rem;
+  padding: var(--space-sm);
   font-size: 1rem;
   border: 1px solid var(--border);
   border-radius: 8px;
@@ -315,37 +385,32 @@ form#transaction-form select {
   color: var(--text);
 }
 
-/* --- Transactions List ------------------------------------------------- */
+/* Transactions list */
 .transactions {
   list-style: none;
   padding: 0;
-  margin: 0;
 }
-
 .transactions li {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem;
-  margin-bottom: 1rem;
+  padding: var(--space-md);
+  margin-bottom: var(--space-md);
   background: var(--card-bg);
   border-radius: 10px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-
 .transactions li:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
 }
-
 .transactions li.income {
-  background: rgba(34, 197, 94, 0.08);
+  background: rgba(34, 197, 94, 0.1);
   border-left: 4px solid #22c55e;
 }
-
 .transactions li.expense {
-  background: rgba(239, 68, 68, 0.08);
+  background: rgba(239, 68, 68, 0.1);
   border-left: 4px solid #ef4444;
 }
 
@@ -353,35 +418,32 @@ form#transaction-form select {
   flex: 2;
   font-weight: 600;
 }
-
 .transactions .amount {
   flex: 1;
   text-align: right;
 }
-
-.transactions .category-badge {
-  margin-left: 1rem;
-  padding: 0.3rem 0.75rem;
-  background: var(--bar-bg);
-  border-radius: 20px;
-  font-size: 0.85rem;
-  color: var(--text);
+.transactions .category-badge,
+.transactions .date,
+.transactions .actions {
+  margin-left: var(--space-sm);
   white-space: nowrap;
 }
 
+.transactions .category-badge {
+  padding: var(--space-xs) var(--space-sm);
+  font-size: 0.85rem;
+  background: var(--bar-bg);
+  border-radius: 20px;
+  color: var(--text);
+}
 .transactions .date {
   font-size: 0.85rem;
   color: var(--muted);
-  margin-left: 1rem;
-  white-space: nowrap;
 }
-
 .transactions .actions {
   display: flex;
-  gap: 0.5rem;
-  margin-left: 1rem;
+  gap: var(--space-xs);
 }
-
 .transactions .actions button {
   background: none;
   border: none;
@@ -390,7 +452,35 @@ form#transaction-form select {
   color: var(--muted);
   transition: color 0.2s ease;
 }
-
 .transactions .actions button:hover {
   color: var(--text);
+}
+
+/* Responsive adjustments for transaction items */
+@media (max-width: 480px) {
+  .transactions li {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .transactions .amount,
+  .transactions .category-badge,
+  .transactions .date,
+  .transactions .actions {
+    margin-left: 0;
+    margin-top: var(--space-xs);
+  }
+}
+
+/* Budget chart container (if needed) */
+.chart-container {
+  width: 100%;
+  height: 300px;
+}
+
+/* Additional responsive tweaks */
+@media (max-width: 480px) {
+  .dashboard-section .chart-section .card,
+  .dashboard-section .metrics .card {
+    padding: var(--space-md);
+  }
 }

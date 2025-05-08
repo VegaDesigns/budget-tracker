@@ -19,7 +19,7 @@ export default function BalanceTrend({ data, height = 140 }) {
           margin={{ top: 10, right: 20, bottom: 20, left: 0 }}
         >
           {/* 1. Light grid for reference */}
-          <CartesianGrid stroke="var(--border)" strokeDasharray="3 3" />
+          <CartesianGrid stroke="rgba(255,255,255,0.1)" strokeDasharray="3 3" />
 
           {/* 2. X-axis: only start/end ticks, formatted M/D */}
           <XAxis
@@ -37,7 +37,7 @@ export default function BalanceTrend({ data, height = 140 }) {
           {/* 3. Y-axis: dollar formatting */}
           <YAxis
             domain={["dataMin", "dataMax"]}
-            tickFormatter={(val) => `$${val}`}
+            tick={{ fill: "var(--text)", fontSize: 12 }}
           />
 
           {/* 4. Styled tooltip */}

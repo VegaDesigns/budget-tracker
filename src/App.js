@@ -1,10 +1,13 @@
+// src/App.js
 import React, { useState, useMemo } from "react";
 import { useBudget } from "./context/BudgetContext";
-
 import Sidebar from "./components/Sidebar";
 import BalanceTrend from "./components/BalanceTrend";
 import TransactionForm from "./components/TransactionForm";
 import TransactionItem from "./components/TransactionItem";
+
+// Import the avatar asset
+import userAvatar from "./assets/avatar.png";
 
 // — Demo dataset for the 30-day trend chart
 const DEMO_TRANSACTIONS = [
@@ -75,28 +78,31 @@ export default function App() {
 
   // — Local UI state
   const [filter, setFilter] = useState("all");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // — Derived totals from live transactions
+  // — Derived totals
   const totalIncome = useMemo(
     () =>
       transactions
         .filter((t) => t.amount > 0)
-        .reduce((s, t) => s + t.amount, 0),
+        .reduce((sum, t) => sum + t.amount, 0),
     [transactions]
   );
   const totalExpense = useMemo(
     () =>
       transactions
         .filter((t) => t.amount < 0)
-        .reduce((s, t) => s + Math.abs(t.amount), 0),
+        .reduce((sum, t) => sum + Math.abs(t.amount), 0),
     [transactions]
   );
+
+  // — Filtered transactions
   const filteredTransactions = useMemo(
     () => transactions.filter((t) => filter === "all" || t.category === filter),
     [transactions, filter]
   );
 
-  // — Compute 30-day running balances (demo data)
+  // — Compute 30-day running balances
   const dailyBalances = useMemo(() => {
     const today = new Date();
     const start = new Date();
@@ -110,7 +116,7 @@ export default function App() {
     const sorted = [...DEMO_TRANSACTIONS].sort((a, b) => a.date - b.date);
     let running = 0;
     const result = dates.map((d) => {
-      const cutoff = d.setHours(23, 59, 59, 999);
+      const cutoff = new Date(d).setHours(23, 59, 59, 999);
       sorted.forEach((tx) => {
         if (tx.date <= cutoff && !tx._counted) {
           running += tx.amount;
@@ -129,19 +135,14 @@ export default function App() {
     return result;
   }, []);
 
-  // — Handlers to dispatch actions
+  // — Handlers
   const handleAddTransaction = (tx) =>
     dispatch({ type: "ADD_TX", payload: tx });
   const handleDeleteTransaction = (id) =>
     dispatch({ type: "DELETE_TX", payload: id });
   const handleToggleTheme = () => dispatch({ type: "TOGGLE_THEME" });
-
-  // — Export CSV of live transactions
   const handleExportCSV = () => {
-    if (!transactions.length) {
-      alert("No transactions to export.");
-      return;
-    }
+    if (!transactions.length) return alert("No transactions to export.");
     const headers = ["Description", "Amount", "Type", "Category", "Date"];
     const rows = transactions.map((t) => [
       `"${t.description}"`,
@@ -160,23 +161,32 @@ export default function App() {
 
   return (
     <div className={`app-layout ${theme}`}>
+      {/* Mobile toggle for sidebar */}
+      <button
+        className="sidebar-toggle"
+        onClick={() => setSidebarOpen((o) => !o)}
+      >
+        ☰
+      </button>
+
+      {/* Sidebar navigation */}
       <Sidebar
+        isOpen={sidebarOpen}
         onExport={handleExportCSV}
         onToggleTheme={handleToggleTheme}
         theme={theme}
+        avatarUrl={userAvatar}
       />
 
+      {/* Main content */}
       <main className="main-content">
-        {/* —— Simple page header —— */}
         <header className="page-header">
           <h1>Budget Tracker</h1>
         </header>
 
-        {/* Two-column dashboard & list */}
         <div className="container-grid">
-          {/* Dashboard section */}
+          {/* Metrics cards */}
           <section className="dashboard-section">
-            {/* Row of 3 metric cards */}
             <div className="metrics">
               <div className="card">
                 <h3>Balance</h3>
@@ -194,7 +204,6 @@ export default function App() {
               </div>
             </div>
 
-            {/* ─── 30-Day Balance Chart ────────────────────────────────── */}
             <div className="chart-section">
               <div className="card">
                 <h3>30-Day Balance Trend</h3>
