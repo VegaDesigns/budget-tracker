@@ -30,7 +30,7 @@ export default function TransactionItem({ tx, onDelete }) {
 
       {/* Delete button */}
       <div className="actions">
-        <button onClick={() => onDelete(tx.id)}>
+        <button aria-label="Delete transaction" onClick={() => onDelete(tx.id)}>
           <FaTrashAlt size={14} />
         </button>
       </div>

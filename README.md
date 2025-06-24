@@ -1,7 +1,10 @@
 # Budget Tracker — Phase 2 (React 19)
 
-> Phase 2 is an in‑progress rewrite that modernises the UI, adopts React best practices,  
+> Phase 2 is an in‑progress rewrite that modernises the UI, adopts React best practices,
 > and sets the stage for powerful new features.
+
+The React app under `src/` is the actively maintained codebase. The original
+vanilla JS implementation has been moved to `docs/archive/` for reference.
 
 ---
 

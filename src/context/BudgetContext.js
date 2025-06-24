@@ -1,9 +1,20 @@
 import React, { createContext, useReducer, useContext, useEffect } from "react";
 
 // ---------- initial state ----------
+function safeParse(key, defaultValue) {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return defaultValue;
+    return JSON.parse(raw);
+  } catch {
+    localStorage.removeItem(key);
+    return defaultValue;
+  }
+}
+
 const initialState = {
-  transactions: JSON.parse(localStorage.getItem("transactions") || "[]"),
-  monthlyBudget: JSON.parse(localStorage.getItem("monthlyBudget") || "null"),
+  transactions: safeParse("transactions", []),
+  monthlyBudget: safeParse("monthlyBudget", null),
   theme: localStorage.getItem("theme") || "light",
 };
 

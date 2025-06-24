@@ -17,6 +17,7 @@ export default function Sidebar({
   onToggleTheme,
   theme,
   avatarUrl,
+  exportNotice,
 }) {
   const isDark = theme === "dark";
 
@@ -70,6 +71,11 @@ export default function Sidebar({
         <button className="sidebar__export-btn" onClick={onExport}>
           <FaFileExport /> Export CSV
         </button>
+        {exportNotice && (
+          <p className="export-notice" role="status">
+            {exportNotice}
+          </p>
+        )}
       </div>
     </aside>
   );

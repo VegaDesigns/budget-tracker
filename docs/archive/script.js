@@ -15,7 +15,6 @@ const typeInput       = document.getElementById('type');
 const catInput        = document.getElementById('category');
 const formErrorEl     = document.getElementById('form-error');
 const themeToggle     = document.getElementById('theme-toggle');
-const filterCategory  = document.getElementById('filter-category');
 const budgetForm      = document.getElementById('budget-form');
 const budgetInput     = document.getElementById('budget-input');
 const budgetSummary   = document.getElementById('budget-summary');
@@ -89,7 +88,7 @@ budgetForm?.addEventListener('submit', e => {
   if (val > 0) {
     monthlyBudget = val;
     localStorage.setItem('monthlyBudget', val);
-    updateBudgetStatus(getFilteredTransactions());
+    updateBudgetStatus(transactions);
     budgetInput.value = '';
   }
 });
@@ -150,10 +149,8 @@ function updateUI() {
 
 // ----- Filtering -----
 function getFilteredTransactions() {
-  const cat = filterCategory?.value || 'all';
-  return transactions.filter(t => cat === 'all' || t.category === cat);
+  return transactions;
 }
-filterCategory?.addEventListener('change', updateUI);
 
 // ----- Form Validation Helpers -----
 function showError(msg) {
@@ -226,13 +223,16 @@ document.getElementById('export-btn')?.addEventListener('click', () => {
     return alert("No transactions to export.");
   }
   const headers = ["Description","Amount","Type","Category","Date"];
-  const rows = transactions.map(t => [
-    `"${t.description}"`,
-    t.amount,
-    t.amount < 0 ? "Expense" : "Income",
-    t.category,
-    formatDate(t.date)
-  ]);
+  const rows = transactions.map(t => {
+    const desc = String(t.description).replace(/"/g, '""');
+    return [
+      `"${desc}"`,
+      t.amount,
+      t.amount < 0 ? "Expense" : "Income",
+      t.category,
+      formatDate(t.date)
+    ];
+  });
   const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
   const link = document.createElement('a');
