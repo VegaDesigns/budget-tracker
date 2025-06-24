@@ -79,6 +79,7 @@ export default function App() {
   // — Local UI state
   const [filter, setFilter] = useState("all");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [exportNotice, setExportNotice] = useState("");
 
   // — Derived totals
   const totalIncome = useMemo(
@@ -142,15 +143,22 @@ export default function App() {
     dispatch({ type: "DELETE_TX", payload: id });
   const handleToggleTheme = () => dispatch({ type: "TOGGLE_THEME" });
   const handleExportCSV = () => {
-    if (!transactions.length) return alert("No transactions to export.");
+    if (!transactions.length) {
+      setExportNotice("No transactions to export.");
+      setTimeout(() => setExportNotice(""), 3000);
+      return;
+    }
     const headers = ["Description", "Amount", "Type", "Category", "Date"];
-    const rows = transactions.map((t) => [
-      `"${t.description}"`,
-      t.amount,
-      t.amount < 0 ? "Expense" : "Income",
-      t.category,
-      new Date(t.date).toLocaleString(),
-    ]);
+    const rows = transactions.map((t) => {
+      const desc = String(t.description).replace(/"/g, '""');
+      return [
+        `"${desc}"`,
+        t.amount,
+        t.amount < 0 ? "Expense" : "Income",
+        t.category,
+        new Date(t.date).toLocaleString(),
+      ];
+    });
     const csv = [headers, ...rows].map((r) => r.join(",")).join("\n");
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
@@ -164,6 +172,7 @@ export default function App() {
       {/* Mobile toggle for sidebar */}
       <button
         className="sidebar-toggle"
+        aria-label="Toggle sidebar"
         onClick={() => setSidebarOpen((o) => !o)}
       >
         ☰
@@ -176,6 +185,7 @@ export default function App() {
         onToggleTheme={handleToggleTheme}
         theme={theme}
         avatarUrl={userAvatar}
+        exportNotice={exportNotice}
       />
 
       {/* Main content */}
